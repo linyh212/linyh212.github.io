@@ -1,0 +1,14 @@
+{
+  "name": "你的名字",
+  "email": "your@email.com",
+  "links": [
+    {
+      "title": "GitHub",
+      "url": "https://github.com/yourname"
+    },
+    {
+      "title": "作品集",
+      "url": "https://your-site.com"
+    }
+  ]
+}
