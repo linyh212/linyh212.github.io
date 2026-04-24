@@ -1,15 +1,58 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>My Page</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1 id="name"></h1>
-    <p id="email"></p>
-    <ul id="links"></ul>
+<html lang="en">
 
-    <script src="script.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">YourName</div>
+
+    <div class="nav-right">
+      <ul class="nav-links" id="navMenu">
+        <li><a href="#">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+      </ul>
+
+      <div class="menu-toggle" id="menuToggle">☰</div>
+    </div>
+  </nav>
+
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Hello,</h1>
+      <p>C++ Developer / Student</p>
+      <p>I build efficient systems and solve problems.</p>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="section">
+    <h2>About Me</h2>
+    <p>I specialize in C++, algorithms, and system design.</p>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="section">
+    <h2>Projects</h2>
+    <div class="grid">
+      <div class="card">Huffman Coding</div>
+      <div class="card">Graph Search</div>
+      <div class="card">Compiler Project</div>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+
 </body>
 </html>

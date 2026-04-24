@@ -1,7 +1,156 @@
-body {
-    font-family: Arial;
-    margin: 40px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-a {
-    color: blue;
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  color: #f5e6c8;
+  background: #0b1b2b;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  z-index: 3000;
+  background: rgba(30, 40, 50, 0.85);
+  backdrop-filter: blur(10px);
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+  color: #f5e6c8;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links li {
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #f5e6c8;
+  opacity: 0.8;
+  font-size: 14px;
+  letter-spacing: 2px;
+  transition: 0.2s;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+}
+
+.menu-toggle {
+  display: block;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 4000;
+  color: #f5e6c8;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100vh;
+    background: #333b45;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 90px;
+    gap: 30px;
+    transition: right 0.35s ease;
+    z-index: 2500;
+  }
+  .nav-links.active {
+    right: 0;
+  }
+  .menu-toggle {
+    display: block;
+  }
+}
+
+/* ================= OVERLAY ================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s ease;
+  z-index: 2000;
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ================= HERO ================= */
+.hero {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #333b45;
+}
+
+.hero-content {
+  color: #f5e6c8;
+}
+
+.hero h1 {
+  font-size: 60px;
+}
+
+.hero p {
+  margin-bottom: 20px;
+}
+
+/* ================= SECTION ================= */
+.section {
+  padding: 80px 50px;
+}
+
+/* ================= GRID ================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* ================= CARD ================= */
+.card {
+  background: #102636;
+  padding: 20px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  background: #333b45;
 }

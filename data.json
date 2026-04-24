@@ -1,14 +1,27 @@
 {
   "name": "你的名字",
-  "email": "your@email.com",
+  "title": "C++ Developer / Student",
+  "about": "我是一名專注於演算法與系統開發的學生。",
+  "projects": [
+    {
+      "name": "Huffman Coding",
+      "desc": "使用 C++ 實作壓縮演算法",
+      "link": "https://github.com/yourname/huffman"
+    },
+    {
+      "name": "Graph Search",
+      "desc": "DFS / BFS / Best-First Search",
+      "link": "https://github.com/yourname/search"
+    }
+  ],
   "links": [
     {
       "title": "GitHub",
       "url": "https://github.com/yourname"
     },
     {
-      "title": "作品集",
-      "url": "https://your-site.com"
+      "title": "Email",
+      "url": "mailto:your@email.com"
     }
   ]
 }
