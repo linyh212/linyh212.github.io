@@ -7,7 +7,7 @@
 body {
   font-family: "Segoe UI", sans-serif;
   color: #f5e6c8;
-  background: #0b1b2b;
+  background: rgb(30, 40, 50);
 }
 
 /* ================= NAVBAR ================= */
@@ -61,7 +61,7 @@ body {
 }
 
 .menu-toggle {
-  display: block;
+  display: none;
   font-size: 28px;
   cursor: pointer;
   z-index: 4000;
@@ -99,7 +99,7 @@ body {
   backdrop-filter: blur(6px);
   opacity: 0;
   visibility: hidden;
-  transition: 0.3s ease;
+  transition: 0.35s ease;
   z-index: 2000;
 }
 
@@ -118,16 +118,30 @@ body {
   background: #333b45;
 }
 
-.hero-content {
-  color: #f5e6c8;
+.hello-text {
+  font-family: 'Allura', cursive;
+  font-size: 150px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.95);
+  position: relative;
+  overflow: hidden;
 }
 
-.hero h1 {
-  font-size: 60px;
+.hello-text::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #333b45;
+  transform: translateX(-100%);
+  animation: wipe 4.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
-
-.hero p {
-  margin-bottom: 20px;
+@keyframes wipe {
+  0%   { transform: translateX(-100%); }
+  35%  { transform: translateX(0%); }
+  55%  { transform: translateX(0%); }
+  85%  { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* ================= SECTION ================= */
@@ -144,13 +158,26 @@ body {
 
 /* ================= CARD ================= */
 .card {
-  background: #102636;
+  background: #333b45;
   padding: 20px;
   border-radius: 10px;
-  transition: 0.3s;
+  transition: 0.2s;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  background: #333b45;
+  transform: translateY(-2px);
+  background: #576475;
+}
+
+/* ================= TREE ================= */
+.file-tree{
+  margin-top: 80px;
+  padding: 30px ;
+  font-family: monospace;
+  background:#333b45;
+}
+
+.file-tree pre {
+  margin: 0;
+  line-height: 1.6;
 }

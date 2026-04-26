@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const toggle = document.getElementById("menuToggle");
   const nav = document.getElementById("navMenu");
   const overlay = document.getElementById("overlay");
@@ -21,14 +20,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   overlay.addEventListener("click", closeMenu);
 
-  document.querySelectorAll(".nav-links a").forEach(link => {
+  document.querySelectorAll(".nav-links a").forEach((link) => {
     link.addEventListener("click", closeMenu);
   });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMenu();
   });
-
+  
+  document.getElementById("glass-text").textContent = "hello.";
+  
   // ===== Load data =====
   fetch("data.json")
     .then((res) => res.json())
