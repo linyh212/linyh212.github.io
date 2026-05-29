@@ -1,0 +1,34 @@
+---
+import Navbar from "../components/Navbar.astro";
+---
+
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>My Astro Site</title>
+  </head>
+
+  <body>
+    <Navbar />
+
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(body) {
+    margin: 0;
+
+    background-color: rgb(61, 61, 61);
+    color: rgb(200, 200, 200);
+    
+    font-family: sans-serif;
+  }
+
+  main {
+    padding: 40px;
+  }
+</style>
