@@ -1,14 +1,15 @@
 ---
-const { project, projects, currentSlug } = Astro.props;
+const { project: projectName, projects, currentSlug } = Astro.props;
 ---
 
 <aside class="sidebar">
+  <a class="project-link" href={`/project/${projectName}`}>Back to Project</a>
   <h2>Notes</h2>
 
   {
     projects.map((project) => (
       <a
-        href={`/project/${Astro.props.project}/${project.data.slug}`}
+        href={`/project/${projectName}/${project.data.slug}`}
         class={project.data.slug === currentSlug ? 'active' : ''}
       >
         {project.data.title}
@@ -21,7 +22,7 @@ const { project, projects, currentSlug } = Astro.props;
 .sidebar {
   width: 240px;
   padding: 24px;
-
+  background: #0f0f0f;
   border-right: 1px solid #222;
 
   display: flex;
@@ -30,24 +31,56 @@ const { project, projects, currentSlug } = Astro.props;
 }
 
 .sidebar h2 {
-  margin-bottom: 12px;
   color: white;
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 12px;
 }
 
 .sidebar a {
-  text-decoration: none;
   color: #aaa;
-
+  text-decoration: none;
   padding: 8px 12px;
   border-radius: 8px;
+  transition: 0.2s;
+}
+
+.sidebar .project-link {
+  color: white;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .sidebar a:hover {
-  background: rgb(80, 80, 80);
+  background: #333;
+  color: white;
 }
 
 .active {
-  background: rgb(80, 80, 80);
+  background: #333;
   color: white !important;
+}
+
+/* =========================
+   MOBILE DRAWER
+========================= */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    height: 100vh;
+    width: 260px;
+
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+
+    z-index: 1001;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
 }
 </style>

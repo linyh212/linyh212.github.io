@@ -1,34 +1,140 @@
 ---
-import Navbar from "../components/Navbar.astro";
+import Navbar from '../components/Navbar.astro';
+const { projects, currentSlug } = Astro.props;
 ---
 
 <html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>My Astro Site</title>
+    <title>My Notes</title>
   </head>
 
   <body>
     <Navbar />
 
-    <main>
-      <slot />
-    </main>
+    <!-- mobile menu -->
+    <div class="mobile-menu">
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/project">Project</a>
+    </div>
+
+    <!-- overlay -->
+    <div class="overlay"></div>
+
+    <div class="container">
+      <slot name="sidebar" />
+
+      <main>
+        <article class="markdown">
+          <slot />
+        </article>
+      </main>
+    </div>
   </body>
 </html>
 
 <style>
-  :global(body) {
-    margin: 0;
+:global(body) {
+  margin: 0;
+  background: #1e1e1e;
+  color: #e5e7eb;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
-    background-color: rgb(61, 61, 61);
-    color: rgb(200, 200, 200);
-    
-    font-family: sans-serif;
+/* layout */
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.markdown {
+  max-width: 860px;
+  width: 100%;
+  line-height: 1.8;
+}
+
+/* =========================
+   MOBILE MENU
+========================= */
+.mobile-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+
+    background: #0f0f0f;
+    padding: 16px 24px;
+
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+
+    transition: 0.2s ease;
+
+    z-index: 1002;
   }
 
-  main {
-    padding: 40px;
+  .mobile-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
+
+  .mobile-menu a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .mobile-menu a:hover {
+    color: white;
+  }
+}
+
+/* =========================
+   OVERLAY
+========================= */
+.overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.5);
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: 0.25s ease;
+
+    z-index: 1000;
+  }
+
+  .overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
 </style>
