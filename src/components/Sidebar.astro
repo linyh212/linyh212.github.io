@@ -1,0 +1,53 @@
+---
+const { project, projects, currentSlug } = Astro.props;
+---
+
+<aside class="sidebar">
+  <h2>Notes</h2>
+
+  {
+    projects.map((project) => (
+      <a
+        href={`/project/${Astro.props.project}/${project.data.slug}`}
+        class={project.data.slug === currentSlug ? 'active' : ''}
+      >
+        {project.data.title}
+      </a>
+    ))
+  }
+</aside>
+
+<style>
+.sidebar {
+  width: 240px;
+  padding: 24px;
+
+  border-right: 1px solid #222;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar h2 {
+  margin-bottom: 12px;
+  color: white;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #aaa;
+
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.sidebar a:hover {
+  background: rgb(80, 80, 80);
+}
+
+.active {
+  background: rgb(80, 80, 80);
+  color: white !important;
+}
+</style>

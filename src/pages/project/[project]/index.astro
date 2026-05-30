@@ -1,32 +1,40 @@
 ---
-import Layout from '../../layouts/Layout.astro'
-import { getCollection } from 'astro:content'
+import Layout from "../../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
 
-const projects = await getCollection('project')
-const getProjectName = (entry) => entry.id.split('/')[0]
-const projectNames = [...new Set(projects.map(getProjectName))]
+export async function getStaticPaths() {
+  const entries = await getCollection("project");
+  const getProjectName = (entry) => entry.id.split("/")[0];
+  const projectNames = [...new Set(entries.map(getProjectName))];
+
+  return projectNames.map((project) => ({
+    params: { project },
+    props: {
+      project,
+      entries: entries.filter((entry) => getProjectName(entry) === project),
+    },
+  }));
+}
+
+const { project, entries } = Astro.props;
 ---
 
 <Layout>
   <div class="container">
-    <h1>Projects</h1>
+    <h1>{project}</h1>
 
     <div class="grid">
       {
-        projectNames.map((project) => {
-          const notes = projects.filter((entry) => getProjectName(entry) === project)
-
-          return (
-          <a class="card" href={`/project/${project}`}>
-            <h2>{project}</h2>
-            <p>{notes.length} notes</p>
+        entries.map((entry) => (
+          <a class="card" href={`/project/${project}/${entry.data.slug}`}>
+            <h2>{entry.data.title}</h2>
+            <p>{entry.data.description}</p>
 
             <span class="meta">
-              {notes[0]?.data.date.toLocaleDateString('zh-TW')}
+              {entry.data.date.toLocaleDateString("zh-TW")}
             </span>
           </a>
-          )
-        })
+        ))
       }
     </div>
   </div>
@@ -42,6 +50,7 @@ const projectNames = [...new Set(projects.map(getProjectName))]
     font-size: 28px;
     margin-bottom: 20px;
     color: white;
+    text-transform: capitalize;
   }
 
   .grid {

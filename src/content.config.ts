@@ -5,8 +5,10 @@ const project = defineCollection({
   loader: glob({
     pattern: '**/*.md',
     base: './src/content/project',
+    generateId: ({ entry }) => entry.replace(/\.md$/, ''),
   }),
   schema: z.object({
+    slug: z.string(),
     title: z.string(),
     date: z.coerce.date(),
     description: z.string(),
