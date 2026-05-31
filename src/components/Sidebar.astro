@@ -20,8 +20,15 @@ const { project: projectName, projects, currentSlug } = Astro.props;
 
 <style>
 .sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  box-sizing: border-box;
+
   width: 240px;
+  height: 100vh;
   padding: 24px;
+  overflow-y: auto;
   background: #0f0f0f;
   border-right: 1px solid #222;
 
