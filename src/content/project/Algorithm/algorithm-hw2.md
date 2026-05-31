@@ -1,7 +1,7 @@
 ---
 slug: algorithm-hw2
 title: Algorithm HW2
-date: 2026-05-30
+date: 2025-05-08
 description: Algorithm HW2
 ---
 
