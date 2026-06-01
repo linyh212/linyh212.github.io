@@ -58,7 +58,7 @@ For "DRY" principle, we can memorize the solution of each subproblems in a table
 
 The Fibonacci sequence is a sequence in which each element is the sum of the previous two elements. A native recursive implementation is as follows:
 
-```C++
+```cpp
 int F(int n) {
     if (n < 1) return 0;
     else if (n == 1) return 1;
@@ -80,7 +80,7 @@ When we runs a DP approach algorithm, we have 2 different solving strategy of su
 
 - Top-down: Check the current problem is solved or not. If yes, return the answer. Otherwise, solve the problem recursively. 
 
-```C++
+```cpp
 #include <vector>
 
 int F(int n) {
@@ -95,7 +95,7 @@ int F(int n) {
 
 - Bottom-up: Solve all subproblems that be depended on any other bigger problems iteratively.
 
-```C++
+```cpp
 #include <vector>
 
 int F(int n) {

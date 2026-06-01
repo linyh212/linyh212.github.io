@@ -80,7 +80,7 @@ asymptotic behavior of the complexity. Therefore, the time complexity is commonl
 
 ## Big O notation  
 
-Definition: f(x) = O(g(x)) if there exists M,x0  R+ such that |f(x)| ≤ M|g(x)| for all x ≥ x0  
+Definition: $f(x) = O(g(x))$ if there exists $M,x_0 \in \mathbb{R}^+$ such that $|f(x)| \le M|g(x)|$ for all $x \ge x_0$  
 
 #### **Question: f(x),g(x),h(x) are 3 functions. Try to proof if f(x) = O(g(x)) and g(x) = O(h(x)), then f(x) = O(h(x)).**
 
@@ -97,4 +97,4 @@ By the proposition of above question, we know that big O notions are kind of set
 • exponential time: $O(c^n)$  
 • factorial time: $O(n!)$, $O(n^n)$, $O(2^{n\log n})$  
 
-#### Question: ∀a,b that 1 < a,b ∈ N, proof $log_{a}{n}$ = $O(log_{b}{n})$.  
+#### Question: $\forall a,b$ that $1 < a,b \in \mathbb{N}$, proof $\log_{a}{n}$ = $O(\log_{b}{n})$.  

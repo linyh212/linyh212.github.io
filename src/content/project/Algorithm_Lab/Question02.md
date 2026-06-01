@@ -15,7 +15,7 @@ The divide and conquer is a paradigm that breaks down a problem into two or more
 When we design algorithm with divide and conquer paradigm, we need to solve the same type problems many times (original problem and sub-problems). 
 Thus, when we implement function which using divide and conquer algorithm, the function usually recursivelly call itself to solve sub-problems.
 The psudo code may like followed:
-```C++
+```cpp
 #include <vector>
 
 ReturnType solve(DataSet input) {
@@ -50,7 +50,7 @@ We can implement the above algorithm as above pseudo code.
 
 For speed, pass the parameter as slice, in other words, pass the legal range rather than copy whole subset. 
 Response type depands on what we are finding, i.e., the type of given data.
-```C++
+```cpp
 #include <vector>
 typedef double DataType;
 std::vector<DataType> given;
@@ -61,7 +61,7 @@ struct DataSet {
 
 Now, suppose we choose $k = 2$. We can implement the algorithm as followed: 
 
-```C++
+```cpp
 DataType solve(DataSet input) {
     // if the input is trivial, return the answer
     if (input.count == 1) // if we have only 1 element, then it's the biggest one

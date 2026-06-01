@@ -42,13 +42,14 @@ const { project, entries } = Astro.props;
 
 <style>
   .container {
-    max-width: 900px;
+    max-width: 920px;
     margin: 0 auto;
+    font-size: 1.08rem;
   }
 
   h1 {
-    font-size: 28px;
-    margin-bottom: 20px;
+    font-size: 2rem;
+    margin: 0 0 1.25rem;
     color: white;
     text-transform: capitalize;
   }
@@ -61,16 +62,11 @@ const { project, entries } = Astro.props;
 
   .card {
     display: block;
-
-    padding: 16px;
-
+    padding: 18px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
-
     background: rgba(255, 255, 255, 0.03);
-
     text-decoration: none;
-
     transition: 0.2s;
   }
 
@@ -81,19 +77,20 @@ const { project, entries } = Astro.props;
   }
 
   h2 {
-    margin: 0 0 8px 0;
-    font-size: 18px;
+    margin: 0 0 12px 0;
+    font-size: 1.25rem;
     color: white;
   }
 
   p {
-    margin: 0 0 12px 0;
-    font-size: 14px;
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    line-height: 1.6;
     color: rgba(255, 255, 255, 0.7);
   }
 
   .meta {
-    font-size: 12px;
+    font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.4);
   }
 </style>

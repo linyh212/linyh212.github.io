@@ -22,7 +22,7 @@ Morse code is not a prefix-free code. Assume that we represent a short signal wi
 Any prefix-free binary code can be represented as a binary tree with characters stored at the leaves. 
 For example, if we have 3 characters A(10), B(11), C(0) in our alphabet, we can represent it as a binary tree as follows. 
 
-```graphviz
+```
 digraph hierarchy {
     1 [label = ""]
     2 [label = "C"]
@@ -47,7 +47,7 @@ We can generate a code-tree by following steps:
 
 And we can implement above algorithm as below in C++:
 
-```C++
+```cpp
 class HuffmanCode {
     struct Node {
         Node *e0, *e1;
@@ -131,7 +131,7 @@ Assume that there are 2 time ranges $[s_0, t_0)$ and $[s_1, t_1)$ that $s_0 \le 
 
 and may implement as followed: 
 
-```C++
+```cpp
 struct Activity {
     int s, e;
 };
@@ -174,7 +174,7 @@ $Cap$ is the resource, $v(x_i)$ is performance, and $w(x_i)$ is the cost.
 
 We may apply the heuristic as follows: 
 
-```C++
+```cpp
 struct Item {
     int v, w;
 };

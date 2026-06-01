@@ -22,7 +22,7 @@ Since we need to check the value of each elements at least once to guarentee the
 our time complexity always not better than $O(n)$. 
 We may design a linear time element as below: 
 
-```C++
+```cpp
 template <typename T>
 T& max(const T data[], int n) {
     int ret = 0;
@@ -36,7 +36,7 @@ T& max(const T data[], int n) {
 
 If our data is in increasing order, the only thing we need to do is just return the last element (cost $O(1)$).
 
-```C++
+```cpp
 template <typename T>
 T& max(const T sorted_data[], int n) {
     return sorted_data[n-1];
@@ -56,7 +56,7 @@ Let us do a more complex variation of above problem.
 For a given list $A = \{ a_1, a_2, \dots, a_n \}$ and a key $k$, asking for finding the elements $a \in A$ that $a = k$.  
 
 In naive way, we can design an $O(n)$ program as below: 
-```C++
+```cpp
 template <typename T>
 int find(const T data[], int n, const T key) {
     for (int i = 0; i < n ; ++i) {
@@ -74,7 +74,7 @@ We know that any element $a_i, i < k$ will not bigger than $a_k$,
 and any element $a_i, i > k$ will not less than $a_k$. 
 
 Thus, we can design a search progrm as followed:
-```C++
+```cpp
 template <typename T>
 
 int find(const T sorted_data[], int n, const T key) {
@@ -113,7 +113,7 @@ Binary search can not only searching element, but also find solution from contin
 
 We can solve unkonwn continuous function by intermediate value theorem and binary search as below:
 
-```C++
+```cpp
 #include <cmath>
 
 double solve(double (*f)(double), double a, double b, double val, double epi) {
@@ -141,7 +141,7 @@ double solve(double (*f)(double), double a, double b, double val, double epi) {
 For traditional search problem, we can divide data to more than 2 partitions if we want. 
 
 Followed pseudo code shows how to work with $k$ partitions
-```C++
+```cpp
 #include <vector>
 template <typename T>
 

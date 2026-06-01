@@ -3,6 +3,27 @@ import Layout from '../layouts/Layout.astro'
 ---
 
 <Layout>
-  <h1>Home</h1>
-  <p>這是首頁</p>
+  <div class="page">
+    <h1>Home</h1>
+    <p>這是首頁</p>
+  </div>
 </Layout>
+
+<style>
+  .page {
+    font-size: 1.08rem;
+  }
+
+  h1 {
+    margin: 0 0 1.25rem;
+    font-size: 2rem;
+    color: white;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.72);
+  }
+</style>

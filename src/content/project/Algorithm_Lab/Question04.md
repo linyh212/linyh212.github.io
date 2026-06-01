@@ -29,7 +29,7 @@ Change-making is a classical problem that asking you to use as few coins as poss
 
 For above problem, we may use the heuristic "larger value may reach the specified amount faster" to design and implement the algorithm as below:
 
-```C++
+```cpp
 #include <vector>
 #include <algorithm>
 typedef std::vector<int> IntList;
@@ -99,7 +99,7 @@ By question 1. we can design an greedy algorithm for finding minimum spanning tr
 
 We can implement the above algorithm as followed: 
 
-```C++
+```cpp
 #include <vector>
 #include <list>
 
