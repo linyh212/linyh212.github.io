@@ -71,13 +71,13 @@ const { project: projectName, projects, currentSlug } = Astro.props;
 /* =========================
    MOBILE DRAWER
 ========================= */
-@media (max-width: 768px) {
+@media (max-width: 768px), (orientation: portrait) and (max-width: 1024px) {
   .sidebar {
     position: fixed;
-    top: 0;
+    top: 60px;
     left: 0;
 
-    height: 100vh;
+    height: calc(100vh - 60px);
     width: 260px;
 
     transform: translateX(-100%);
