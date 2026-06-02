@@ -2,7 +2,7 @@
 slug: algorithm_lab_qusetion02
 title: 'Qusetion02'
 date: 2025-04-04
-description: Algorithm_Lab, Qusetion
+description: Divide And Conquer
 ---
 
 (Question design by ndhu csie 小紅)

@@ -1,5 +1,5 @@
 ---
-slug: astro-note
+slug: astro_note
 title: Astro Note
 date: 2026-05-29
 description: Astro framework 筆記

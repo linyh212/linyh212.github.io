@@ -2,7 +2,7 @@
 slug: algorithm_lab_qusetion03
 title: 'Qusetion03'
 date: 2025-04-02
-description: Algorithm_Lab, Qusetion
+description: Divide And Conquer cont. - Binary Search
 ---
 
 (Question design by ndhu csie 小紅)

@@ -1,6 +1,6 @@
 ---
-slug: test
-title: Test
+slug: T2C_HW1
+title: T2C_HW1
 date: 2026-05-30
 description: Parser grammar notes
 ---

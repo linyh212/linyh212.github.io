@@ -2,7 +2,7 @@
 slug: algorithm_lab_qusetion04
 title: 'Qusetion04'
 date: 2025-04-23
-description: Algorithm_Lab, Qusetion
+description: Greedy - Spanning Trees
 ---
 
 (Question design by ndhu csie 小紅)

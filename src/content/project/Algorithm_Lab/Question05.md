@@ -2,7 +2,7 @@
 slug: algorithm_lab_qusetion05
 title: 'Qusetion05'
 date: 2025-05-08
-description: Algorithm_Lab, Qusetion
+description: Greedy 2
 ---
 
 (Question design by ndhu csie 小紅)

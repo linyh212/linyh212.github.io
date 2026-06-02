@@ -2,7 +2,7 @@
 slug: algorithm_lab_qusetion08
 title: 'Qusetion08'
 date: 2025-06-05
-description: Algorithm_Lab, Qusetion
+description: Dynamic Programming 3
 ---
 
 (Question design by ndhu csie 小紅)

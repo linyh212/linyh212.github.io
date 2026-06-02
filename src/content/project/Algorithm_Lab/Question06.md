@@ -2,12 +2,12 @@
 slug: algorithm_lab_qusetion06
 title: 'Qusetion06'
 date: 2025-05-24
-description: Algorithm_Lab, Qusetion
+description: Dynamic Programming
 ---
 
 (Question design by ndhu csie 小紅)
 
-# Lab 06. Dynamic Programming 
+# Lab 06. Dynamic Programming
 
 ## 0/1 Knapsack Problem
 
