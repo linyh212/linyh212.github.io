@@ -145,4 +145,4 @@ The code tests the sorting algorithms for a range of input sizes:
 These sizes are chosen to test how the performance of the algorithm scales as the input size increases. The larger the input, the more significant the impact of the chosen threshold and the method used (Insertion Sort vs. Merge/Quick Sort).
 
 ### 4. Experiment Results of the Different Combinations of the Above 3 Things:
-![image](https://hackmd.io/_uploads/B1DYd2z0kx.png)
+![image](/images/alg01.png)

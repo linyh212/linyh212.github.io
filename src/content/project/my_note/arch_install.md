@@ -1,13 +1,11 @@
 ---
-slug: arch_install
-title: arch_install
+slug: arch_install_and_setup
+title: ArchLinux Install and Setup
 date: 2026-05-29
 description: Arch Linux Install and Setup
 ---
 
-# ArchLinux Install and Setup
-
-## 1. connect to wifi
+# 1. connect to wifi
 :`iwctl`  
 
 :`device list` (will see wlan0 or wlp2s0)  
@@ -20,7 +18,7 @@ description: Arch Linux Install and Setup
 
 :`exit` and test :`ping archlinux.org`  
 
-## 2. archinstall script:
+# 2. archinstall script:
 :`archinstall`  
 > Select Archinstall language  
   Select keyboard layout: `EN(us)`  
@@ -49,8 +47,8 @@ description: Arch Linux Install and Setup
   :`cd yay`  
   :`makepkg -si`  
 
-## 3. Hyprland setup:
-#### Installing JaKooLit Arch-Hyprland Script
+# 3. Hyprland setup:
+## Installing JaKooLit Arch-Hyprland Script
 :`git clone --depth=1 https://github.com/JaKooLit/Arch-Hyprland.git ~/Arch-Hyprland`  
 
 :`cd ~/Arch-Hyprland`  
@@ -59,8 +57,8 @@ description: Arch Linux Install and Setup
 
 :`./install.sh`  
 
-## 4. Traditional Chinese and Chewing:
-#### zh_TW:
+# 4. Traditional Chinese and Chewing:
+## zh_TW:
 :`sudo nano /etc/locale.gen`
 
 delete `#` in front of `zh_TW.UTF-8 UTF-8`
@@ -74,7 +72,7 @@ add:
 LANG=en_US.UTF-8
 LC_CTYPE=zh_TW.UTF-8
 ```
-#### keyboard:
+## keyboard:
 :`sudo pacman -S fcitx5-im fcitx5 fcitx5-gtk fcitx5-qt fcitx5-configtool fcitx5-chewing`
 
 :`nano ~/.xprofile`
@@ -101,7 +99,7 @@ pgrep -x fcitx5 >/dev/null || fcitx5 -d &
 
 :`fcitx5-configtool`
 
-## 5. Kitty Terminal
+# 5. Kitty Terminal
 :`yay -S ttf-jetbrains-mono-nerd ttf-fira-code-nerd ttf-hack-nerd`
 
 :`nano ~/.config/kitty/kitty.conf`

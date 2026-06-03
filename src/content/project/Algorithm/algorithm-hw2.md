@@ -130,7 +130,7 @@ Item Counts: 10, 20, 30
 
 ## Sample Results and Analysis
 Below are the results of the test:
-![圖片](https://hackmd.io/_uploads/rk5RrpYlgl.png)
+![圖片](/images/alg02.png)
 | Items | Range    | Capacity | Bottom-Up Profit | Bottom-Up Time (ms) | Top-Down Profit | Top-Down Time (ms) | Greedy Profit | Greedy Time (ms) |
 |-------|----------|----------|------------------|----------------------|------------------|---------------------|---------------|------------------|
 | 10    | 1-1      | 5        | 5                | 6610                 | 5                | 4137                | 5             | 5482             |
