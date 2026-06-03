@@ -3,39 +3,40 @@ import { getCollection, render } from 'astro:content';
 
 import NoteLayout from '../../../layouts/NoteLayout.astro';
 import Sidebar from '../../../components/Sidebar.astro';
-import { getGroupName } from '../../../lib/content';
+import { getContentRoot, getGroupEntriesByRoot } from '../../../lib/content';
 
 export async function getStaticPaths() {
   const entries = await getCollection('content');
+  const noteEntries = entries.filter((e: any) => getContentRoot(e) === 'note')
 
-  return entries.map((entry: any) => ({
+  return noteEntries.map((entry: any) => ({
     params: {
-      project: getGroupName(entry),
+      note: String(entry.id).split('/')[1] || 'note',
       slug: entry.data.slug
     },
     props: {
-      project: getGroupName(entry),
+      note: String(entry.id).split('/')[1] || 'note',
       entry
     }
   }));
 }
 
-const { project, entry }: any = Astro.props;
+const { note, entry }: any = Astro.props;
 
 const entries: any[] = await getCollection('content');
-const projectEntries = entries.filter((item: any) => getGroupName(item) === project);
+const noteEntries = getGroupEntriesByRoot(entries, 'note', note);
 
 const { Content } = await render(entry);
 ---
 
 <NoteLayout
-  projects={projectEntries}
+  projects={noteEntries}
   currentSlug={entry.data.slug}
 >
   <Fragment slot="sidebar">
     <Sidebar
-      project={project}
-      projects={projectEntries}
+      project={note}
+      projects={noteEntries}
       currentSlug={entry.data.slug}
     />
   </Fragment>

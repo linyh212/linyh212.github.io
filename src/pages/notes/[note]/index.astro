@@ -1,37 +1,37 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import { getCollection } from "astro:content";
-import { getGroupName } from "../../../lib/content";
+import Layout from '../../../layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+import { getGroupsByRoot, getGroupEntriesByRoot } from '../../../lib/content'
 
 export async function getStaticPaths() {
-  const entries = await getCollection("content");
-  const projectNames = ([...new Set(entries.map((e: any) => getGroupName(e)))] as string[])
+  const entries = await getCollection('content')
+  const noteNames = getGroupsByRoot(entries).note || []
 
-  return projectNames.map((project) => ({
-    params: { project },
+  return noteNames.map((note) => ({
+    params: { note },
     props: {
-      project,
-      entries: entries.filter((entry: any) => getGroupName(entry) === project),
+      note,
+      entries: getGroupEntriesByRoot(entries, 'note', note),
     },
-  }));
+  }))
 }
 
-const { project, entries } = Astro.props;
+const { note, entries } = Astro.props
 ---
 
 <Layout>
   <div class="container">
-    <h1>{project}</h1>
+    <h1>{note}</h1>
 
     <div class="grid">
       {
-        entries.map((entry: any) => (
-          <a class="card" href={`/project/${project}/${entry.data.slug}`}>
+        entries.map((entry) => (
+          <a class="card" href={`/notes/${note}/${entry.data.slug}`}>
             <h2>{entry.data.title}</h2>
             <p>{entry.data.description}</p>
 
             <span class="meta">
-              {entry.data.date.toLocaleDateString("zh-TW")}
+              {entry.data.date.toLocaleDateString('zh-TW')}
             </span>
           </a>
         ))

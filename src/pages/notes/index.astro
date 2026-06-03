@@ -1,40 +1,34 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import { getCollection } from "astro:content";
-import { getGroupName } from "../../../lib/content";
+import Layout from '../../layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+import { getContentRoot, getGroupsByRoot, getGroupEntriesByRoot, formatGroupMeta } from '../../lib/content'
 
-export async function getStaticPaths() {
-  const entries = await getCollection("content");
-  const projectNames = ([...new Set(entries.map((e: any) => getGroupName(e)))] as string[])
-
-  return projectNames.map((project) => ({
-    params: { project },
-    props: {
-      project,
-      entries: entries.filter((entry: any) => getGroupName(entry) === project),
-    },
-  }));
-}
-
-const { project, entries } = Astro.props;
+const entries = await getCollection('content')
+const groupsByRoot = getGroupsByRoot(entries)
+const noteNames = groupsByRoot.note || []
 ---
 
 <Layout>
   <div class="container">
-    <h1>{project}</h1>
+    <h1>Notes</h1>
 
     <div class="grid">
       {
-        entries.map((entry: any) => (
-          <a class="card" href={`/project/${project}/${entry.data.slug}`}>
-            <h2>{entry.data.title}</h2>
-            <p>{entry.data.description}</p>
+        noteNames.map((note) => {
+          const items = getGroupEntriesByRoot(entries, 'note', note)
+          const meta = formatGroupMeta(items)
+
+          return (
+          <a class="card" href={`/notes/${note}`}>
+            <h2>{note}</h2>
+            <p>{items.length} notes</p>
 
             <span class="meta">
-              {entry.data.date.toLocaleDateString("zh-TW")}
+              {meta}
             </span>
           </a>
-        ))
+          )
+        })
       }
     </div>
   </div>
@@ -51,7 +45,6 @@ const { project, entries } = Astro.props;
     font-size: 2rem;
     margin: 0 0 1.25rem;
     color: white;
-    text-transform: capitalize;
   }
 
   .grid {
@@ -62,11 +55,16 @@ const { project, entries } = Astro.props;
 
   .card {
     display: block;
+
     padding: 18px;
+
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
+
     background: rgba(255, 255, 255, 0.03);
+
     text-decoration: none;
+
     transition: 0.2s;
   }
 

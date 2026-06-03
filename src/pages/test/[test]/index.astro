@@ -1,32 +1,32 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import { getGroupName } from "../../../lib/content";
+import { getGroupName } from '../../../lib/content';
 
 export async function getStaticPaths() {
   const entries = await getCollection("content");
-  const projectNames = ([...new Set(entries.map((e: any) => getGroupName(e)))] as string[])
+  const testNames = ([...new Set(entries.map((e: any) => getGroupName(e)))] as string[])
 
-  return projectNames.map((project) => ({
-    params: { project },
+  return testNames.map((test) => ({
+    params: { test },
     props: {
-      project,
-      entries: entries.filter((entry: any) => getGroupName(entry) === project),
+      test,
+      entries: entries.filter((entry: any) => getGroupName(entry) === test),
     },
   }));
 }
 
-const { project, entries } = Astro.props;
+const { test, entries } = Astro.props;
 ---
 
 <Layout>
   <div class="container">
-    <h1>{project}</h1>
+    <h1>{test}</h1>
 
     <div class="grid">
       {
         entries.map((entry: any) => (
-          <a class="card" href={`/project/${project}/${entry.data.slug}`}>
+          <a class="card" href={`/project/${test}/${entry.data.slug}`}>
             <h2>{entry.data.title}</h2>
             <p>{entry.data.description}</p>
 

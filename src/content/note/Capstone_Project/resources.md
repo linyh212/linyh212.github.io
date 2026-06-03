@@ -6,7 +6,7 @@ description: Data and Paper resources
 ---
 
 # Data
-- [Report and Dataset (OneDrive)](https://365ndhu-my.sharepoint.com/:f:/g/personal/411221420_o365_ndhu_edu_tw/IgANrpGef3KpR5cMVqObQPxlAefQdpqp_BLIjaHCBYSGofk)
+- [Report and Dataset (Google Drive)](https://drive.google.com/drive/folders/1EhdN6XlUTXbnjK4gBsZLqq9Z3Pp7pdj5?usp=sharing)
 - [Dataset (Dropbox, source)](https://www.dropbox.com/scl/fo/6yq51zlu2mtsl23tt4r3a/AH79ukRf0SUz2N5Yu59hYkw?rlkey=gfhbahnp461kshm9pmi8qn0q1&st=upaazkwx&dl=0)
 - [GitHub program](https://github.com/Dragon-Boat-Graduated-Project/Dragon_Boat.git)
 

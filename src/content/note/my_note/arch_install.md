@@ -68,7 +68,7 @@ delete `#` in front of `zh_TW.UTF-8 UTF-8`
 :`sudo nano /etc/locale.conf`
 
 add:
-```tx=
+```bash
 LANG=en_US.UTF-8
 LC_CTYPE=zh_TW.UTF-8
 ```
@@ -78,7 +78,7 @@ LC_CTYPE=zh_TW.UTF-8
 :`nano ~/.xprofile`
 
 add:
-```tx=
+```bash
 #!/bin/bash
 # 設定 Fcitx5 輸入法所需環境變數
 export GTK_IM_MODULE=fcitx5
@@ -105,7 +105,7 @@ pgrep -x fcitx5 >/dev/null || fcitx5 -d &
 :`nano ~/.config/kitty/kitty.conf`
 
 modify:
-```tx=
+```bash
 font_family         JetBrainsMono Nerd Font
 bold_font           auto
 italic_font         auto

@@ -10,32 +10,32 @@ export async function getStaticPaths() {
 
   return entries.map((entry: any) => ({
     params: {
-      project: getGroupName(entry),
+      test: getGroupName(entry),
       slug: entry.data.slug
     },
     props: {
-      project: getGroupName(entry),
+      test: getGroupName(entry),
       entry
     }
   }));
 }
 
-const { project, entry }: any = Astro.props;
+const { test, entry }: any = Astro.props;
 
 const entries: any[] = await getCollection('content');
-const projectEntries = entries.filter((item: any) => getGroupName(item) === project);
+const testEntries = entries.filter((item: any) => getGroupName(item) === test);
 
 const { Content } = await render(entry);
 ---
 
 <NoteLayout
-  projects={projectEntries}
+  projects={testEntries}
   currentSlug={entry.data.slug}
 >
   <Fragment slot="sidebar">
     <Sidebar
-      project={project}
-      projects={projectEntries}
+      project={test}
+      projects={testEntries}
       currentSlug={entry.data.slug}
     />
   </Fragment>
