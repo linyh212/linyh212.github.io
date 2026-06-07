@@ -1,17 +1,49 @@
 ---
-import Layout from '../layouts/Layout.astro'
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
   <div class="page">
-    <h1>Home</h1>
-    <p>這是首頁</p>
+    <!-- SVG Draw Animation -->
+    <div class="svg-wrap">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="720"
+        height="540"
+        viewBox="0 0 480 360"
+      >
+        <!-- background (optional) -->
+        <rect width="480" height="360" fill="transparent"></rect>
+
+        <!-- animated path -->
+        <path
+          class="draw-path"
+          d="M23,213 C54.5,213 165.800003,98.900002 118.199997,98.200005 C70.599998,97.5 
+            75.5,238.899994 75.5,238.899994 C75.5,238.899994 77.599998,172.399994 116.099998,172.399994 
+            C154.599991,172.399994 109.799995,237.5 143.399994,239.600006 C177,241.699997 225.300003,175.899994 
+            190.300003,174.5 C155.300003,173.100006 156,236.100006 202.899994,238.199997 C249.800003,240.300003 
+            303.699982,105.900002 262.399994,103.099998 C221.099991,100.300003 228.800003,234.699997 270.799988,237.5 
+            C312.799988,240.300003 373.699982,104.5 331,102.400002 C288.299988,100.300003 293.199982,236.800003 
+            337.299988,237.5 C365.299988,236.100006 356.199982,171.699997 392.600006,173.100006 C412.899994,174.5 
+            421.299988,189.899994 420.600006,189.199997 C419.899994,188.5 426.899994,236.800003 389.799988,236.800003 
+            C352.699982,236.800003 356.899994,171.699997 392.600006,173.100006 C424.799988,175.899994 420.600006,203.899994 
+            421.299988,196.199997 C421.299988,196.899994 444.399994,189.199997 447.899994,173.800003"
+          fill="none"
+          stroke="white"
+          stroke-width="9"
+          stroke-linecap="round"
+        >
+        </path>
+      </svg>
+    </div>
   </div>
 </Layout>
 
 <style>
   .page {
     font-size: 1.08rem;
+    text-align: center;
+    margin-top: 60px;
   }
 
   h1 {
@@ -25,5 +57,55 @@ import Layout from '../layouts/Layout.astro'
     font-size: 1rem;
     line-height: 1.7;
     color: rgba(255, 255, 255, 0.72);
+  }
+
+  .svg-wrap {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .draw-path {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    stroke: currentColor;
+    animation:
+      drawErase 13s ease-in-out infinite,
+      colorShift 10s linear infinite;
+  }
+
+  @keyframes drawErase {
+    0% {
+      stroke-dashoffset: 2000;
+    } /* 完全隱藏 */
+    40% {
+      stroke-dashoffset: 0;
+    } /* 畫出來 */
+    100% {
+      stroke-dashoffset: -2000;
+    } /* 往反方向消失 */
+  }
+
+  @keyframes colorShift {
+    0% {
+      stroke: #fda0a0;
+    }
+    30% {
+      stroke: #bafda0;
+    }
+    50% {
+      stroke: #a0d9fd;
+    }
+    80% {
+      stroke: #bda0fd;
+    }
+    100% {
+      stroke: #fda0a0;
+    }
   }
 </style>
