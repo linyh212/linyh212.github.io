@@ -1,6 +1,5 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
-import Sidebar from '../../../../components/Sidebar.astro';
 import { getCollection } from 'astro:content';
 import { getContentRoot, getGroupEntriesByRoot, formatGroupMeta, getRootGroupTitle } from '../../../../lib/content';
 
@@ -27,9 +26,6 @@ const title = getRootGroupTitle(root);
 ---
 
 <Layout>
-  <div slot="sidebar">
-    <Sidebar root={root} projects={groupEntries} group={group} />
-  </div>
 
   <div class="container">
     <h1>{title}: {group}</h1>
@@ -37,18 +33,105 @@ const title = getRootGroupTitle(root);
     {groupEntries.length === 0 ? (
       <p>目前沒有此群組的內容。</p>
     ) : (
-      <div class="grid">
+      <div class="grid" id="fileGrid">
         {groupEntries.map((entry) => (
-          <a class="card" href={`/project/${root}/${group}/${entry.data.slug}`}>
-            <h2>{entry.data.title}</h2>
-            <p>{entry.data.description}</p>
-            <span class="meta">{formatGroupMeta([entry])}</span>
-          </a>
+          <article class="card" data-file-id={String(entry.id)}>
+            <a class="card-link" href={`/project/${root}/${group}/${entry.data.slug}`}>
+              <h2>{entry.data.title}</h2>
+              <p>{entry.data.description}</p>
+              <span class="meta">{formatGroupMeta([entry])}</span>
+            </a>
+
+            <button
+              class="pin-btn"
+              type="button"
+              data-file-id={String(entry.id)}
+              aria-label="Pin project"
+            >
+              ❤️
+            </button>
+          </article>
         ))}
       </div>
     )}
   </div>
 </Layout>
+
+<script is:inline>
+  const STORAGE_KEY = 'astro-pinned-projects';
+  const grid = document.getElementById('fileGrid');
+
+  const getPinned = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch {
+      return new Set();
+    }
+  };
+
+  const pinned = getPinned();
+
+  const savePinned = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...pinned]));
+    } catch {}
+  };
+
+  const updatePinButton = (button, isPinned) => {
+    button.classList.toggle('pinned', isPinned);
+    button.textContent = isPinned ? '❤️' : ' ';
+    button.setAttribute('aria-label', isPinned ? 'Unpin project' : 'Pin project');
+  };
+
+  const updateCards = () => {
+    if (!grid) return;
+
+    const cards = Array.from(grid.querySelectorAll('.card'));
+
+    cards.forEach((card) => {
+      const id = card.dataset.fileId;
+      const button = card.querySelector('.pin-btn');
+      const isPinned = id && pinned.has(id);
+
+      card.classList.toggle('pinned', isPinned);
+      if (button) updatePinButton(button, isPinned);
+    });
+
+    const pinnedCards = cards.filter(
+      (card) => card.dataset.fileId && pinned.has(card.dataset.fileId)
+    );
+
+    pinnedCards.reverse().forEach((card) => grid.prepend(card));
+  };
+
+  const togglePin = (id) => {
+    if (!id) return;
+
+    if (pinned.has(id)) pinned.delete(id);
+    else pinned.add(id);
+
+    savePinned();
+    updateCards();
+  };
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const button = target.closest('.pin-btn');
+    if (!button) return;
+
+    event.preventDefault();
+    togglePin(button.dataset.fileId);
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateCards);
+  } else {
+    updateCards();
+  }
+</script>
 
 <style>
   .container {
@@ -70,12 +153,11 @@ const title = getRootGroupTitle(root);
   }
 
   .card {
-    display: block;
+    position: relative;
     padding: 18px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.03);
-    text-decoration: none;
     transition: 0.2s;
   }
 
@@ -85,21 +167,54 @@ const title = getRootGroupTitle(root);
     background: rgba(255, 255, 255, 0.06);
   }
 
+  .card.pinned {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.16);
+  }
+
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding-right: 48px;
+  }
+
   h2 {
-    margin: 0 0 12px 0;
+    margin: 0 0 12px;
     font-size: 1.25rem;
     color: white;
   }
 
   p {
-    margin: 0 0 16px 0;
-    font-size: 1rem;
-    line-height: 1.6;
+    margin: 0 0 16px;
     color: rgba(255, 255, 255, 0.7);
   }
 
   .meta {
     font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.4);
+  }
+
+  .pin-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .pin-btn:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .pin-btn.pinned {
+    background: #2563eb;
+    color: white;
   }
 </style>

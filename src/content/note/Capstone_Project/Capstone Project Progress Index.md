@@ -2,7 +2,7 @@
 slug: capstone_project_progress_index
 title: Index
 date: 2026-05-07
-description: Capstone_Project_Progress_Index
+description: Capstone Project Progress Index
 ---
 # Capstone Project Progress Index
 ## Member
