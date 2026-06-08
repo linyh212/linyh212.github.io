@@ -3,19 +3,14 @@ import { getCollection, render } from 'astro:content';
 
 import NoteLayout from '../../../layouts/NoteLayout.astro';
 import Sidebar from '../../../components/Sidebar.astro';
-<<<<<<< HEAD
 import {
   getContentRoot,
   getGroupEntriesByRoot
 } from '../../../lib/content';
-=======
-import { getGroupName } from '../../../lib/content';
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
 
 export async function getStaticPaths() {
   const entries = await getCollection('content');
 
-<<<<<<< HEAD
   const testEntries = entries.filter(
     (e: any) => getContentRoot(e) === 'test'
   );
@@ -27,15 +22,6 @@ export async function getStaticPaths() {
     },
     props: {
       test: String(entry.id).split('/')[1] || 'test',
-=======
-  return entries.map((entry: any) => ({
-    params: {
-      test: getGroupName(entry),
-      slug: entry.data.slug
-    },
-    props: {
-      test: getGroupName(entry),
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
       entry
     }
   }));
@@ -44,16 +30,12 @@ export async function getStaticPaths() {
 const { test, entry }: any = Astro.props;
 
 const entries: any[] = await getCollection('content');
-<<<<<<< HEAD
 
 const testEntries = getGroupEntriesByRoot(
   entries,
   'test',
   test
 );
-=======
-const testEntries = entries.filter((item: any) => getGroupName(item) === test);
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
 
 const { Content } = await render(entry);
 ---
@@ -73,8 +55,4 @@ const { Content } = await render(entry);
   <h1>{entry.data.title}</h1>
 
   <Content />
-<<<<<<< HEAD
 </NoteLayout>
-=======
-</NoteLayout>
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8

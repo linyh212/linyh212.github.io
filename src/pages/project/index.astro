@@ -1,24 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import { getCollection } from 'astro:content'
-<<<<<<< HEAD
 import { getRoots, getGroupsByRoot, getGroupEntriesByRoot, formatGroupMeta, getRootGroupTitle } from '../../lib/content'
 
 const entries = await getCollection('content')
 const roots = getRoots(entries)
 const groupsByRoot = getGroupsByRoot(entries)
-=======
-import { getGroupsByRoot, getGroupEntriesByRoot, getContentRoot, getRootGroupTitle, formatGroupMeta } from '../../lib/content'
-
-const entries = await getCollection('content')
-const groupsByRoot = getGroupsByRoot(entries)
-const roots = Object.keys(groupsByRoot)
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
 ---
 
 <Layout>
   <div class="container">
-<<<<<<< HEAD
     <h1>Project</h1>
 
     {roots.length === 0 ? (
@@ -40,38 +31,6 @@ const roots = Object.keys(groupsByRoot)
         })}
       </div>
     )}
-=======
-    {
-      roots.map((root) => {
-        const groups = groupsByRoot[root] || []
-        return (
-          <div class="root-section">
-            <h1 style="margin-top:2rem">{getRootGroupTitle(root)}</h1>
-            <div class="grid">
-              {
-                groups.map((group) => {
-                  const items = getGroupEntriesByRoot(entries, root, group)
-                  const categories = [...new Set(items.map(getContentRoot))].sort().join(', ')
-                  const meta = formatGroupMeta(items)
-                  const href = root === 'note' ? `/notes/${group}` : `/project/${group}`
-
-                  return (
-                  <a class="card" href={href}>
-                    <h2>{group}</h2>
-                    <p>{items.length} notes<br />{categories}</p>
-                    <span class="meta">
-                      {meta}
-                    </span>
-                  </a>
-                  )
-                })
-              }
-            </div>
-          </div>
-        )
-      })
-    }
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
   </div>
 </Layout>
 
@@ -96,24 +55,11 @@ const roots = Object.keys(groupsByRoot)
 
   .card {
     display: block;
-<<<<<<< HEAD
     padding: 18px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.03);
     text-decoration: none;
-=======
-
-    padding: 18px;
-
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-
-    background: rgba(255, 255, 255, 0.03);
-
-    text-decoration: none;
-
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
     transition: 0.2s;
   }
 

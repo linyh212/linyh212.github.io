@@ -1,7 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import { getCollection } from 'astro:content'
-<<<<<<< HEAD
 import {
   getGroupsByRoot,
   getGroupEntriesByRoot,
@@ -12,18 +11,10 @@ const entries = await getCollection('content')
 const groupsByRoot = getGroupsByRoot(entries)
 
 const testNames = groupsByRoot.test || []
-=======
-import { getGroupsByRoot, getGroupEntriesByRoot, getContentRoot, getRootGroupTitle, formatGroupMeta } from '../../lib/content'
-
-const entries = await getCollection('content')
-const groupsByRoot = getGroupsByRoot(entries)
-const roots = Object.keys(groupsByRoot)
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
 ---
 
 <Layout>
   <div class="container">
-<<<<<<< HEAD
     <h1>Test</h1>
 
     <div class="grid">
@@ -33,38 +24,6 @@ const roots = Object.keys(groupsByRoot)
         })
       }
     </div>
-=======
-    {
-      roots.map((root) => {
-        const groups = groupsByRoot[root] || []
-        return (
-          <div class="root-section">
-            <h1 style="margin-top:2rem">{getRootGroupTitle(root)}</h1>
-            <div class="grid">
-              {
-                groups.map((group) => {
-                  const items = getGroupEntriesByRoot(entries, root, group)
-                  const categories = [...new Set(items.map(getContentRoot))].sort().join(', ')
-                  const meta = formatGroupMeta(items)
-                  const href = root === 'note' ? `/notes/${group}` : `/project/${group}`
-
-                  return (
-                  <a class="card" href={href}>
-                    <h2>{group}</h2>
-                    <p>{items.length} notes<br />{categories}</p>
-                    <span class="meta">
-                      {meta}
-                    </span>
-                  </a>
-                  )
-                })
-              }
-            </div>
-          </div>
-        )
-      })
-    }
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
   </div>
 </Layout>
 
@@ -89,10 +48,6 @@ const roots = Object.keys(groupsByRoot)
 
   .card {
     display: block;
-<<<<<<< HEAD
-=======
-
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
     padding: 18px;
 
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -101,10 +56,6 @@ const roots = Object.keys(groupsByRoot)
     background: rgba(255, 255, 255, 0.03);
 
     text-decoration: none;
-<<<<<<< HEAD
-=======
-
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
     transition: 0.2s;
   }
 
@@ -131,8 +82,4 @@ const roots = Object.keys(groupsByRoot)
     font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.4);
   }
-<<<<<<< HEAD
 </style>
-=======
-</style>
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
