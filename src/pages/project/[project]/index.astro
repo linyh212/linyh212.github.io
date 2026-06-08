@@ -1,100 +1,50 @@
 ---
-<<<<<<< HEAD
-import Layout from '../../../layouts/Layout.astro'
-import { getCollection } from 'astro:content'
-import {
-  getGroupsByRoot,
-  getGroupEntriesByRoot
-} from '../../../lib/content'
-
-export async function getStaticPaths() {
-  const entries = await getCollection('content')
-  const testNames = getGroupsByRoot(entries).test || []
-=======
 import Layout from "../../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import { getGroupName } from '../../../lib/content';
+import { getGroupName } from "../../../lib/content";
 
 export async function getStaticPaths() {
   const entries = await getCollection("content");
-  const testNames = ([...new Set(entries.map((e: any) => getGroupName(e)))] as string[])
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
+  const projectNames = ([...new Set(entries.map((e: any) => getGroupName(e)))] as string[])
 
-  return testNames.map((test) => ({
-    params: { test },
+  return projectNames.map((project) => ({
+    params: { project },
     props: {
-      test,
-<<<<<<< HEAD
-      entries: getGroupEntriesByRoot(entries, 'test', test),
-    },
-  }))
-}
-
-const { test, entries } = Astro.props
-=======
-      entries: entries.filter((entry: any) => getGroupName(entry) === test),
+      project,
+      entries: entries.filter((entry: any) => getGroupName(entry) === project),
     },
   }));
 }
 
-const { test, entries } = Astro.props;
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
+const { project, entries } = Astro.props;
 ---
 
 <Layout>
   <div class="container">
-    <h1>{test}</h1>
-
-<<<<<<< HEAD
-    <p class="hint">
-      Pin frequently used project notes in this folder to keep them on top.
-    </p>
+    <h1>{project}</h1>
+    <p class="hint">Pin important files in this project folder so they stay at the top.</p>
 
     <div class="grid" id="fileGrid">
       {
-        entries.map((entry) => (
+        entries.map((entry: any) => (
           <article class="card" data-file-id={String(entry.id)}>
-            <a class="card-link" href={`/test/${test}/${entry.data.slug}`}>
+            <a class="card-link" href={`/project/${project}/${entry.data.slug}`}>
               <div class="card-header">
                 <h2>{entry.data.title}</h2>
               </div>
-
               <p>{entry.data.description}</p>
-
               <span class="meta">
-                {entry.data.date.toLocaleDateString('zh-TW')}
+                {entry.data.date.toLocaleDateString("zh-TW")}
               </span>
             </a>
-
-            <button
-              class="pin-btn"
-              type="button"
-              data-file-id={String(entry.id)}
-              aria-label="Pin file"
-            >
-              📌
-            </button>
+            <button class="pin-btn" type="button" data-file-id={String(entry.id)} aria-label="Pin file">📌</button>
           </article>
-=======
-    <div class="grid">
-      {
-        entries.map((entry: any) => (
-          <a class="card" href={`/project/${test}/${entry.data.slug}`}>
-            <h2>{entry.data.title}</h2>
-            <p>{entry.data.description}</p>
-
-            <span class="meta">
-              {entry.data.date.toLocaleDateString("zh-TW")}
-            </span>
-          </a>
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
         ))
       }
     </div>
   </div>
 </Layout>
 
-<<<<<<< HEAD
 <script is:inline>
   const STORAGE_KEY = 'astro-pinned-files'
   const grid = document.getElementById('fileGrid')
@@ -112,7 +62,7 @@ const { test, entries } = Astro.props;
 
   const updatePinButton = (button, isPinned) => {
     button.classList.toggle('pinned', isPinned)
-    button.textContent = isPinned ? '❤️' : ' '
+    button.textContent = isPinned ? '📌' : '📍'
     button.setAttribute('aria-label', isPinned ? 'Unpin file' : 'Pin file')
   }
 
@@ -130,10 +80,7 @@ const { test, entries } = Astro.props;
       if (button) updatePinButton(button, isPinned)
     })
 
-    const pinnedCards = cards.filter(
-      (card) => card.dataset.fileId && pinned.has(card.dataset.fileId)
-    )
-
+    const pinnedCards = cards.filter((card) => card.dataset.fileId && pinned.has(card.dataset.fileId))
     pinnedCards.reverse().forEach((card) => grid.prepend(card))
   }
 
@@ -145,13 +92,11 @@ const { test, entries } = Astro.props;
 
   const togglePin = (id) => {
     if (!id) return
-
     if (pinned.has(id)) {
       pinned.delete(id)
     } else {
       pinned.add(id)
     }
-
     savePinned()
     updateCards()
   }
@@ -159,12 +104,9 @@ const { test, entries } = Astro.props;
   document.addEventListener('click', (event) => {
     const target = event.target
     if (!(target instanceof Element)) return
-
     const button = target.closest('.pin-btn')
     if (!button) return
-
     event.preventDefault()
-
     const id = button.dataset.fileId
     togglePin(id)
   })
@@ -176,8 +118,6 @@ const { test, entries } = Astro.props;
   }
 </script>
 
-=======
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
 <style>
   .container {
     max-width: 920px;
@@ -187,23 +127,16 @@ const { test, entries } = Astro.props;
 
   h1 {
     font-size: 2rem;
-<<<<<<< HEAD
     margin: 0 0 0.5rem;
-=======
-    margin: 0 0 1.25rem;
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
     color: white;
     text-transform: capitalize;
   }
 
-<<<<<<< HEAD
   .hint {
     margin: 0 0 1.5rem;
     color: rgba(255, 255, 255, 0.7);
   }
 
-=======
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -211,22 +144,14 @@ const { test, entries } = Astro.props;
   }
 
   .card {
-<<<<<<< HEAD
     position: relative;
-=======
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
     display: block;
     padding: 18px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.03);
-<<<<<<< HEAD
     transition: 0.2s;
     overflow: hidden;
-=======
-    text-decoration: none;
-    transition: 0.2s;
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
   }
 
   .card:hover {
@@ -235,7 +160,6 @@ const { test, entries } = Astro.props;
     background: rgba(255, 255, 255, 0.06);
   }
 
-<<<<<<< HEAD
   .card.pinned {
     border-color: #2563eb;
     box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.16);
@@ -254,8 +178,6 @@ const { test, entries } = Astro.props;
     justify-content: space-between;
   }
 
-=======
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
   h2 {
     margin: 0 0 12px 0;
     font-size: 1.25rem;
@@ -273,7 +195,6 @@ const { test, entries } = Astro.props;
     font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.4);
   }
-<<<<<<< HEAD
 
   .pin-btn {
     position: absolute;
@@ -299,6 +220,3 @@ const { test, entries } = Astro.props;
     color: white;
   }
 </style>
-=======
-</style>
->>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8

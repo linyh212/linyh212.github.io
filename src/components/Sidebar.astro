@@ -1,15 +1,27 @@
 ---
+<<<<<<< HEAD
 const { root: rootName, projects, currentSlug, group } = Astro.props;
+=======
+const { project: projectName, projects, currentSlug } = Astro.props;
+>>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
 ---
 
 <aside class="sidebar">
   <a class="project-link" href="/project">Back to Project</a>
+<<<<<<< HEAD
   <h2>{rootName ? rootName.charAt(0).toUpperCase() + rootName.slice(1) : 'Items'}</h2>
+=======
+  <h2>Notes</h2>
+>>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
 
   {
     projects.map((project) => (
       <a
+<<<<<<< HEAD
         href={group ? `/project/${rootName}/${group}/${project.data.slug}` : `/project/${rootName}/${project.data.slug}`}
+=======
+        href={`/project/${projectName}/${project.data.slug}`}
+>>>>>>> 5e06e90801b77afe4cc4a8dacf827725db12dac8
         class={project.data.slug === currentSlug ? 'active' : ''}
       >
         {project.data.title}
