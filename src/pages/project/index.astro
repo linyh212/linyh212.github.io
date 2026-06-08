@@ -1,0 +1,89 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+import { getRoots, getGroupsByRoot, getGroupEntriesByRoot, formatGroupMeta, getRootGroupTitle } from '../../lib/content'
+
+const entries = await getCollection('content')
+const roots = getRoots(entries)
+const groupsByRoot = getGroupsByRoot(entries)
+---
+
+<Layout>
+  <div class="container">
+    <h1>Project</h1>
+
+    {roots.length === 0 ? (
+      <p>目前沒有可用的內容。</p>
+    ) : (
+      <div class="grid">
+        {roots.map((root) => {
+          const groups = groupsByRoot[root] ?? []
+          const items = groups.length > 0 ? getGroupEntriesByRoot(entries, root, groups[0]) : []
+          const meta = formatGroupMeta(items)
+
+          return (
+            <a class="card" href={`/project/${root}`}>
+              <h2>{getRootGroupTitle(root)}</h2>
+              <p>{groups.length} groups</p>
+              <span class="meta">{groups.length > 0 ? meta : '尚無內容'}</span>
+            </a>
+          )
+        })}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    font-size: 1.08rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 1.25rem;
+    color: white;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    display: block;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    text-decoration: none;
+    transition: 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.25rem;
+    color: white;
+  }
+
+  p {
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .meta {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+</style>

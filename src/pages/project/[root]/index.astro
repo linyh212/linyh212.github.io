@@ -1,0 +1,99 @@
+---
+import Layout from '../../../layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+import { getRoots, getGroupsByRoot, getGroupEntriesByRoot, formatGroupMeta, getRootGroupTitle } from '../../../lib/content'
+
+export async function getStaticPaths() {
+  const entries = await getCollection('content')
+  const roots = getRoots(entries)
+
+  return roots.map((root) => ({
+    params: { root }
+  }))
+}
+
+const { root } = Astro.params;
+const entries = await getCollection('content');
+const groupsByRoot = getGroupsByRoot(entries);
+const groups = groupsByRoot[root] ?? [];
+const title = getRootGroupTitle(root);
+---
+
+<Layout>
+  <div class="container">
+    <h1>{title}</h1>
+
+    {groups.length === 0 ? (
+      <p>目前沒有可用的 {title} 群組。</p>
+    ) : (
+      <div class="grid">
+        {groups.map((group) => {
+          const items = getGroupEntriesByRoot(entries, root, group);
+          const meta = formatGroupMeta(items);
+
+          return (
+            <a class="card" href={`/project/${root}/${group}`}>
+              <h2>{group}</h2>
+              <p>{items.length} items</p>
+              <span class="meta">{meta}</span>
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    font-size: 1.08rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 1.25rem;
+    color: white;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    display: block;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    text-decoration: none;
+    transition: 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.25rem;
+    color: white;
+  }
+
+  p {
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .meta {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+</style>

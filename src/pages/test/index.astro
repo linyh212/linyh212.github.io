@@ -1,0 +1,85 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+import {
+  getGroupsByRoot,
+  getGroupEntriesByRoot,
+  formatGroupMeta
+} from '../../lib/content'
+
+const entries = await getCollection('content')
+const groupsByRoot = getGroupsByRoot(entries)
+
+const testNames = groupsByRoot.test || []
+---
+
+<Layout>
+  <div class="container">
+    <h1>Test</h1>
+
+    <div class="grid">
+      {
+        testNames.map((test) => {
+          const items = getGroupEntriesByRoot(entries, 'test', test)
+        })
+      }
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    font-size: 1.08rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 1.25rem;
+    color: white;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    display: block;
+    padding: 18px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.03);
+
+    text-decoration: none;
+    transition: 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.25rem;
+    color: white;
+  }
+
+  p {
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .meta {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+</style>

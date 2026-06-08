@@ -1,0 +1,93 @@
+---
+const { root: rootName, projects, currentSlug, group } = Astro.props;
+---
+
+<aside class="sidebar">
+  <a class="project-link" href="/project">Back to Project</a>
+  <h2>{rootName ? rootName.charAt(0).toUpperCase() + rootName.slice(1) : 'Items'}</h2>
+
+  {
+    projects.map((project) => (
+      <a
+        href={group ? `/project/${rootName}/${group}/${project.data.slug}` : `/project/${rootName}/${project.data.slug}`}
+        class={project.data.slug === currentSlug ? 'active' : ''}
+      >
+        {project.data.title}
+      </a>
+    ))
+  }
+</aside>
+
+<style>
+.sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  box-sizing: border-box;
+
+  width: 240px;
+  height: 100vh;
+  padding: 24px;
+  overflow-y: auto;
+  background: #0f0f0f;
+  border-right: 1px solid #222;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar h2 {
+  color: white;
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 12px;
+}
+
+.sidebar a {
+  color: #aaa;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.sidebar .project-link {
+  color: white;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar a:hover {
+  background: #333;
+  color: white;
+}
+
+.active {
+  background: #333;
+  color: white !important;
+}
+
+/* =========================
+   MOBILE DRAWER
+========================= */
+@media (max-width: 768px), (orientation: portrait) and (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+
+    height: calc(100vh - 60px);
+    width: 260px;
+
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+
+    z-index: 1001;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+</style>

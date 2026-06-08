@@ -1,0 +1,58 @@
+---
+import { getCollection, render } from 'astro:content';
+
+import NoteLayout from '../../../layouts/NoteLayout.astro';
+import Sidebar from '../../../components/Sidebar.astro';
+import {
+  getContentRoot,
+  getGroupEntriesByRoot
+} from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('content');
+
+  const testEntries = entries.filter(
+    (e: any) => getContentRoot(e) === 'test'
+  );
+
+  return testEntries.map((entry: any) => ({
+    params: {
+      test: String(entry.id).split('/')[1] || 'test',
+      slug: entry.data.slug
+    },
+    props: {
+      test: String(entry.id).split('/')[1] || 'test',
+      entry
+    }
+  }));
+}
+
+const { test, entry }: any = Astro.props;
+
+const entries: any[] = await getCollection('content');
+
+const testEntries = getGroupEntriesByRoot(
+  entries,
+  'test',
+  test
+);
+
+const { Content } = await render(entry);
+---
+
+<NoteLayout
+  projects={testEntries}
+  currentSlug={entry.data.slug}
+>
+  <Fragment slot="sidebar">
+    <Sidebar
+      project={test}
+      projects={testEntries}
+      currentSlug={entry.data.slug}
+    />
+  </Fragment>
+
+  <h1>{entry.data.title}</h1>
+
+  <Content />
+</NoteLayout>
