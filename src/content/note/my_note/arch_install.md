@@ -2,7 +2,7 @@
 slug: arch_install_and_setup
 title: ArchLinux Install and Setup
 date: 2026-05-29
-description: Arch Linux Install and Setup
+description: Install and Setup
 ---
 
 # 1. connect to wifi

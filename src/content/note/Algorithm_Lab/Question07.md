@@ -2,7 +2,7 @@
 slug: algorithm_lab_qusetion07
 title: 'Qusetion07'
 date: 2025-06-04
-description: Dynamic 2 - Counting Problems
+description: Dynamic Programming 2 - Counting Problems
 ---
 
 (Question design by ndhu csie 小紅)
