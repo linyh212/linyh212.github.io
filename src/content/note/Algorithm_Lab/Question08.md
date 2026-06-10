@@ -7,7 +7,7 @@ description: Dynamic Programming 3
 
 (Question design by ndhu csie 小紅)
 
-# Lab 08: Dynamic Programming 3
+# Lab 08. Dynamic Programming 3
 
 ## Introduction to Dynamic Programming (動態規劃簡介)
 

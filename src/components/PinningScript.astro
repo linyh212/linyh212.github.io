@@ -1,0 +1,73 @@
+<script>
+  const STORAGE_KEY = 'pinned_content';
+
+  function getPinned() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      console.error("Error reading pinned items from localStorage:", e);
+      return [];
+    }
+  }
+
+  function togglePin(id: string) {
+    let pinned = getPinned();
+    if (pinned.includes(id)) {
+      pinned = pinned.filter(p => p !== id);
+    } else {
+      pinned.push(id);
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(pinned));
+    } catch (e) {
+      console.error("Error writing pinned items to localStorage:", e);
+    }
+    updateUI();
+  }
+
+  function updateUI() {
+    const pinned = getPinned();
+    const grid = document.getElementById('fileGrid');
+    if (!grid) return;
+
+    const items = Array.from(grid.children) as HTMLElement[];
+    
+    items.forEach(item => {
+      const id = item.getAttribute('data-file-id');
+      const btn = item.querySelector('.pin-btn');
+      if (id && btn) {
+        if (pinned.includes(id)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      }
+    });
+
+    items.sort((a, b) => {
+      const aId = a.getAttribute('data-file-id') || '';
+      const bId = b.getAttribute('data-file-id') || '';
+      const aIsPinned = pinned.includes(aId);
+      const bIsPinned = pinned.includes(bId);
+
+      if (aIsPinned && !bIsPinned) return -1;
+      if (!aIsPinned && bIsPinned) return 1;
+      return 0;
+    });
+
+    items.forEach(item => grid.appendChild(item));
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.pin-btn');
+    if (btn) {
+      const fileId = btn.getAttribute('data-file-id');
+      if (fileId) {
+        togglePin(fileId);
+      }
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', updateUI);
+</script>

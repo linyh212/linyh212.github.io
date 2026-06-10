@@ -1,222 +1,39 @@
 ---
 import Layout from '../../../layouts/Layout.astro'
-import { getCollection } from 'astro:content'
-import { getGroupsByRoot, getGroupEntriesByRoot } from '../../../lib/content'
+import { getGroupEntries } from '../../../lib/cms/domain';
+import { generateGroupRoutes } from '../../../lib/cms/routes';
+
+import PinningScript from '../../../components/PinningScript.astro';
+const root = 'note';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('content')
-  const noteNames = getGroupsByRoot(entries).note || []
-
-  return noteNames.map((note) => ({
-    params: { note },
-    props: {
-      note,
-      entries: getGroupEntriesByRoot(entries, 'note', note),
-    },
-  }))
+  // For notes, the root param is 'note', and the group param is 'note'
+  // (since the group name is used as the 'note' param)
+  return await generateGroupRoutes('note', 'note', 'note');
 }
 
-const { note, entries } = Astro.props
+const { note } = Astro.params;
+
+const groupEntries = await getGroupEntries(root, note);
 ---
 
 <Layout>
   <div class="container">
     <h1>{note}</h1>
-    <p class="hint">Pin frequently used notes in this folder to keep them on top.</p>
 
     <div class="grid" id="fileGrid">
-      {
-        entries.map((entry) => (
-          <article class="card" data-file-id={String(entry.id)}>
-            <a class="card-link" href={`/notes/${note}/${entry.data.slug}`}>
-              <div class="card-header">
-                <h2>{entry.data.title}</h2>
-              </div>
-              <p>{entry.data.description}</p>
-              <span class="meta">
-                {entry.data.date.toLocaleDateString('zh-TW')}
-              </span>
-            </a>
-            <button class="pin-btn" type="button" data-file-id={String(entry.id)} aria-label="Pin file">❤️</button>
-          </article>
-        ))
-      }
+      {groupEntries.map((entry) => (
+        <article class="card" data-file-id={entry.id}>
+          <a class="card-link" href={`/notes/${note}/${entry.data.slug}`}>
+            <h2>{entry.data.title}</h2>
+            <p>{entry.data.description}</p>
+          </a>
+
+          <button class="pin-btn" data-file-id={entry.id}>❤️</button>
+        </article>
+      ))}
     </div>
   </div>
 </Layout>
 
-<script is:inline>
-  const STORAGE_KEY = 'astro-pinned-files'
-  const grid = document.getElementById('fileGrid')
-
-  const getPinned = () => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      return new Set(raw ? JSON.parse(raw) : [])
-    } catch {
-      return new Set()
-    }
-  }
-
-  const pinned = getPinned()
-
-  const updatePinButton = (button, isPinned) => {
-    button.classList.toggle('pinned', isPinned)
-    button.textContent = isPinned ? '❤️' : ' '
-    button.setAttribute('aria-label', isPinned ? 'Unpin file' : 'Pin file')
-  }
-
-  const updateCards = () => {
-    if (!grid) return
-
-    const cards = Array.from(grid.querySelectorAll('.card'))
-
-    cards.forEach((card) => {
-      const id = card.dataset.fileId
-      const button = card.querySelector('.pin-btn')
-      const isPinned = Boolean(id && pinned.has(id))
-
-      card.classList.toggle('pinned', isPinned)
-      if (button) updatePinButton(button, isPinned)
-    })
-
-    const pinnedCards = cards.filter((card) => card.dataset.fileId && pinned.has(card.dataset.fileId))
-    pinnedCards.reverse().forEach((card) => grid.prepend(card))
-  }
-
-  const savePinned = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...pinned]))
-    } catch {}
-  }
-
-  const togglePin = (id) => {
-    if (!id) return
-    if (pinned.has(id)) {
-      pinned.delete(id)
-    } else {
-      pinned.add(id)
-    }
-    savePinned()
-    updateCards()
-  }
-
-  document.addEventListener('click', (event) => {
-    const target = event.target
-    if (!(target instanceof Element)) return
-    const button = target.closest('.pin-btn')
-    if (!button) return
-    event.preventDefault()
-    const id = button.dataset.fileId
-    togglePin(id)
-  })
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateCards)
-  } else {
-    updateCards()
-  }
-</script>
-
-<style>
-  .container {
-    max-width: 920px;
-    margin: 0 auto;
-    font-size: 1.08rem;
-  }
-
-  h1 {
-    font-size: 2rem;
-    margin: 0 0 0.5rem;
-    color: white;
-    text-transform: capitalize;
-  }
-
-  .hint {
-    margin: 0 0 1.5rem;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
-
-  .card {
-    position: relative;
-    display: block;
-    padding: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    transition: 0.2s;
-    overflow: hidden;
-  }
-
-  .card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  .card.pinned {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.16);
-  }
-
-  .card-link {
-    display: block;
-    color: inherit;
-    text-decoration: none;
-    padding-right: 52px;
-  }
-
-  .card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-
-  h2 {
-    margin: 0 0 12px 0;
-    font-size: 1.25rem;
-    color: white;
-  }
-
-  p {
-    margin: 0 0 16px 0;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  .meta {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.4);
-  }
-
-  .pin-btn {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
-    color: #d1d5db;
-    cursor: pointer;
-    transition: transform 0.18s ease, background 0.18s ease;
-  }
-
-  .pin-btn:hover {
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.14);
-  }
-
-  .pin-btn.pinned {
-    background: #2563eb;
-    color: white;
-  }
-</style>
+<PinningScript />

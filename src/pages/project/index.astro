@@ -1,158 +1,42 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import {
-  getRoots,
-  getGroupsByRoot,
-  getGroupEntriesByRoot,
-  formatGroupMeta,
-  getRootGroupTitle,
-} from "../../lib/content";
+import { buildProjectTree } from "../../lib/cms/tree";
 
 const entries = await getCollection("content");
-const roots = getRoots(entries);
-const groupsByRoot = getGroupsByRoot(entries);
+const projectData = buildProjectTree(entries);
+
+const pageTitle = projectData.length === 1 ? projectData[0].title : "Overview";
 ---
 
 <Layout>
   <div class="container">
-    <h1>Project</h1>
+    <h1 class="cms-title">{pageTitle}</h1>
 
     {
-      roots.length === 0 ? (
-        <p>目前沒有可用的內容。</p>
+      projectData.length === 0 ? (
+        <p class="cms-meta">目前沒有可用的內容。</p>
       ) : (
-        roots.map((root) => {
-          const groups = groupsByRoot[root] ?? [];
+        projectData.map((section) => (
+          <section class="root-block">
+            <h2 class="root-title">{section.title}</h2>
 
-          return (
-            <section class="root-block">
-              <h2 class="root-title">{getRootGroupTitle(root)}</h2>
-
-              {groups.length === 0 ? (
-                <p class="empty">尚無子資料夾</p>
-              ) : (
-                <div class="grid">
-                  {groups.map((group) => {
-                    const items = getGroupEntriesByRoot(entries, root, group);
-                    const meta = formatGroupMeta(items);
-
-                    return (
-                      <div
-                        class="card"
-                        role="button"
-                        tabindex="0"
-                        data-href={`/project/${root}/${group}`}
-                      >
-                        <h3>{group}</h3>
-                        <p>{items.length} items</p>
-                        <span class="meta">
-                          {items.length > 0 ? meta : "尚無內容"}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
-          );
-        })
+            {section.groups.length === 0 ? (
+              <p class="cms-meta">尚無子資料夾</p>
+            ) : (
+              <div class="cms-grid">
+                {section.groups.map((group) => (
+                  <a href={group.href} class="cms-card">
+                    <h3>{group.name}</h3>
+                    <p>{group.count} items</p>
+                    <span class="cms-meta">{group.meta}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </section>
+        ))
       )
     }
   </div>
-
-  <script is:inline>
-    document.addEventListener("click", (e) => {
-      const card = e.target.closest(".card");
-      if (!card) return;
-
-      const href = card.dataset.href;
-      if (href) window.location.href = href;
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter") return;
-
-      const active = document.activeElement;
-      if (active?.classList?.contains("card")) {
-        const href = active.dataset.href;
-        if (href) window.location.href = href;
-      }
-    });
-  </script>
-
-  <style>
-    .container {
-      max-width: 920px;
-      margin: 0 auto;
-      font-size: 1.08rem;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin: 0 0 1.25rem;
-      color: white;
-    }
-
-    .root-block {
-      margin-bottom: 40px;
-    }
-
-    .root-title {
-      font-size: 1.6rem;
-      margin: 48px 0 12px;
-      color: white;
-    }
-
-    .empty {
-      color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 16px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    .card {
-      display: block;
-      padding: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.03);
-      transition: 0.2s;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .card:focus {
-      outline: 2px solid #2563eb;
-      outline-offset: 2px;
-    }
-
-    h3 {
-      margin: 0 0 12px 0;
-      font-size: 1.25rem;
-      color: white;
-    }
-
-    p {
-      margin: 0 0 16px 0;
-      font-size: 1rem;
-      line-height: 1.6;
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .meta {
-      font-size: 0.875rem;
-      color: rgba(255, 255, 255, 0.4);
-    }
-  </style>
 </Layout>

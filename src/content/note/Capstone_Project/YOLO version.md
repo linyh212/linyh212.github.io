@@ -2,7 +2,7 @@
 slug: YOLO_version
 title: YOLO_version
 date: 2025-09-16
-description: YOLOv8 ~ YOLOv11 differences
+description: YOLOv8~YOLOv11 differences
 ---
 
 # YOLOv8 ~ YOLOv11 整理

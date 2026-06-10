@@ -1,47 +1,34 @@
 ---
-import { getCollection, render } from 'astro:content';
-
+import { render } from 'astro:content';
 import NoteLayout from '../../../layouts/NoteLayout.astro';
 import Sidebar from '../../../components/Sidebar.astro';
-import { getContentRoot, getGroupEntriesByRoot } from '../../../lib/content';
+import { getMeta } from '../../../lib/cms/core';
+import { getGroupEntries } from '../../../lib/cms/domain';
+import { generateSlugRoutes } from '../../../lib/cms/routes';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('content');
-  const noteEntries = entries.filter((e: any) => getContentRoot(e) === 'note')
-
-  return noteEntries.map((entry: any) => ({
-    params: {
-      note: String(entry.id).split('/')[1] || 'note',
-      slug: entry.data.slug
-    },
-    props: {
-      note: String(entry.id).split('/')[1] || 'note',
-      entry
-    }
-  }));
+  return await generateSlugRoutes('note', 'note');
 }
 
-const { note, entry }: any = Astro.props;
-
-const entries: any[] = await getCollection('content');
-const noteEntries = getGroupEntriesByRoot(entries, 'note', note);
-
+const { entry } = Astro.props;
+const meta = getMeta(entry);
+const noteEntries = await getGroupEntries('note', meta.group);
 const { Content } = await render(entry);
 ---
 
 <NoteLayout
   projects={noteEntries}
-  currentSlug={entry.data.slug}
+  currentSlug={meta.slug}
 >
   <Fragment slot="sidebar">
     <Sidebar
-      project={note}
+      root="note"
+      group={meta.group}
       projects={noteEntries}
-      currentSlug={entry.data.slug}
+      currentSlug={meta.slug}
     />
   </Fragment>
 
   <h1>{entry.data.title}</h1>
-
   <Content />
 </NoteLayout>
