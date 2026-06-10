@@ -71,6 +71,13 @@ const { projects, currentSlug } = Astro.props;
     justify-content: center;
     padding: 24px;
     padding-top: calc(var(--navbar-height) + 24px);
+    margin-left: 240px;
+  }
+
+  @media (max-width: 768px), (orientation: portrait) and (max-width: 1024px) {
+    main {
+      margin-left: 0;
+    }
   }
 
   .markdown {
@@ -105,11 +112,19 @@ const { projects, currentSlug } = Astro.props;
 /* =========================
   MOBILE MENU
 ========================= */
+  :global(#hamburger-menu) {
+    display: none;
+  }
+
   .mobile-menu {
     display: none;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 768px), (orientation: portrait) and (max-width: 1024px) {
+    :global(#hamburger-menu) {
+      display: flex;
+    }
+
     .mobile-menu {
       display: flex;
       flex-direction: column;
@@ -156,7 +171,7 @@ const { projects, currentSlug } = Astro.props;
     display: none;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 768px), (orientation: portrait) and (max-width: 1024px) {
     .overlay {
       display: block;
       position: fixed;
