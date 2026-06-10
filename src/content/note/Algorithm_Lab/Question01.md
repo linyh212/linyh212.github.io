@@ -2,7 +2,7 @@
 slug: algorithm_lab_qusetion01
 title: 'Qusetion01'
 date: 2025-03-21
-description: Complexity_and_Big_O_Notation
+description: Complexity and Big_O_Notation
 ---
 
 (Question design by ndhu csie 小紅)

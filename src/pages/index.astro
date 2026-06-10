@@ -63,17 +63,22 @@ import Layout from "../layouts/Layout.astro";
     margin-top: 40px;
     display: flex;
     justify-content: center;
+    align-items: center;
+    width: 100%;
   }
 
   svg {
     max-width: 100%;
+    width: 720px;
     height: auto;
+    display: block;
   }
 
   .draw-path {
     stroke-dasharray: 2000;
     stroke-dashoffset: 2000;
     stroke: currentColor;
+
     animation:
       drawErase 13s ease-in-out infinite,
       colorShift 10s linear infinite;
