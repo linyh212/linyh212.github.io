@@ -8,13 +8,11 @@ import Layout from "../layouts/Layout.astro";
     <div class="svg-wrap">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="720"
-        height="540"
-        viewBox="0 0 480 360"
+        width="960"
+        height="720"
+        viewBox="0 0 720 480"
       >
-        <!-- background (optional) -->
-        <rect width="480" height="360" fill="transparent"></rect>
-
+      
         <!-- animated path -->
         <path
           class="draw-path"
@@ -69,9 +67,9 @@ import Layout from "../layouts/Layout.astro";
 
   svg {
     max-width: 100%;
-    width: 720px;
     height: auto;
     display: block;
+    margin: 0 auto;
   }
 
   .draw-path {
