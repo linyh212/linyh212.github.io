@@ -12,7 +12,6 @@ import Layout from "../layouts/Layout.astro";
         height="720"
         viewBox="0 0 480 360"
       >
-      
         <!-- animated path -->
         <path
           class="draw-path"
@@ -39,6 +38,10 @@ import Layout from "../layouts/Layout.astro";
 
 <style>
   .page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     font-size: 1.08rem;
     text-align: center;
     margin-top: 60px;
@@ -58,18 +61,20 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .svg-wrap {
+    box-sizing: border-box;
     margin-top: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    max-width: 100%;
   }
 
   svg {
-    max-width: 100%;
+    width: 100%;
+    max-width: 960px;
     height: auto;
     display: block;
-    margin: 0 auto;
   }
 
   .draw-path {
