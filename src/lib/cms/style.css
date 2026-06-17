@@ -34,6 +34,9 @@
   --font-main: "Inter", -apple-system, sans-serif;
   --font-size-base: 1.08rem;
   --font-size-title: 2rem;
+  --font-size-h1: 2.4rem;
+  --font-size-h2: 1.8rem;
+  --font-size-h3: 1.3rem;
   --font-size-card: 1.4rem;
   --font-size-meta: 0.85rem;
   --line-height-base: 1.85;
@@ -81,22 +84,24 @@ main {
 .markdown h1, .markdown h2, .markdown h3 {
   color: var(--color-text-heading);
   font-weight: 700;
+  text-wrap: balance;
 }
 
-.markdown h1 { font-size: 2.4rem; margin-bottom: 2rem; }
+.markdown h1 { font-size: var(--font-size-h1); margin-bottom: 2rem; }
 .markdown h2 {
-  font-size: 1.8rem;
+  font-size: var(--font-size-h2);
   margin-top: 3rem;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--color-border-secondary);
 }
-.markdown h3 { font-size: 1.3rem; margin-top: 2rem; }
+.markdown h3 { font-size: var(--font-size-h3); margin-top: 2rem; }
 
 .markdown p, .markdown li {
   margin: 1rem 0;
   color: var(--color-text-secondary);
   text-align: justify;
   text-justify: inter-ideograph;
+  text-wrap: pretty;
 }
 
 .markdown ul, .markdown ol { padding-left: 1.5rem; }
@@ -290,11 +295,20 @@ main {
 /* --- Responsive --- */
 @media (max-width: 768px) {
   :root {
-    --font-size-title: 1.75rem;
-    --font-size-base: 0.95rem;
-    --font-size-meta: 0.82rem;
+    --font-size-title: clamp(1.5rem, 7vw, 1.75rem);
+    --font-size-base: clamp(0.9rem, 2vw + 0.5rem, 1.05rem);
+    --font-size-h1: clamp(1.6rem, 8vw, 1.8rem);
+    --font-size-h2: clamp(1.3rem, 7vw, 1.5rem);
+    --font-size-h3: clamp(1.1rem, 5vw, 1.2rem);
+    --font-size-meta: clamp(0.75rem, 3.5vw, 0.82rem);
   }
 
   .cms-grid, .grid { grid-template-columns: 1fr; }
   main { padding: 20px 16px; }
+
+  .markdown p, .markdown li {
+    text-align: left;
+    /* 在窄螢幕上開啟連字處理，防止過大的空白間隙 */
+    hyphens: auto;
+  }
 }
