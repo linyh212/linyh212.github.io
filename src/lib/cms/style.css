@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
+
 :root {
   /* 🎨 Colors */
   --color-accent: #2563eb;
@@ -31,7 +33,7 @@
   --color-blockquote-bg: rgba(255, 255, 255, 0.04);
 
   /* 🔤 Font Settings */
-  --font-main: "Inter", -apple-system, sans-serif;
+  --font-main: 'Ubuntu', sans-serif;
   --font-size-base: 1.08rem;
   --font-size-title: 2rem;
   --font-size-h1: 2.4rem;
@@ -294,21 +296,24 @@ main {
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
-  :root {
-    --font-size-title: clamp(1.5rem, 7vw, 1.75rem);
-    --font-size-base: clamp(0.9rem, 2vw + 0.5rem, 1.05rem);
-    --font-size-h1: clamp(1.6rem, 8vw, 1.8rem);
-    --font-size-h2: clamp(1.3rem, 7vw, 1.5rem);
-    --font-size-h3: clamp(1.1rem, 5vw, 1.2rem);
-    --font-size-meta: clamp(0.75rem, 3.5vw, 0.82rem);
+  .container { 
+    flex-direction: column;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .cms-grid, .grid { grid-template-columns: 1fr; }
+  main { 
+    padding: 20px 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .cms-grid, .grid { grid-template-columns: 1fr; }
-  main { padding: 20px 16px; }
+  .markdown {
+    overflow-wrap: break-word;
+  }
 
   .markdown p, .markdown li {
     text-align: left;
-    /* 在窄螢幕上開啟連字處理，防止過大的空白間隙 */
     hyphens: auto;
   }
 }
