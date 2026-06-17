@@ -1,10 +1,9 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { getCollection } from "astro:content";
-import { buildProjectTree } from "../../../lib/cms/tree";
+import { getEntries, buildProjectTree } from "../../../lib/cms/query";
 
 export async function getStaticPaths() {
-  const allEntries = await getCollection("content");
+  const allEntries = await getEntries();
   const projectTree = buildProjectTree(allEntries);
 
   return projectTree.map((section) => ({
@@ -14,22 +13,17 @@ export async function getStaticPaths() {
 }
 
 const { root } = Astro.params;
-
 const { section } = Astro.props;
 ---
 
 <Layout>
-  <div class="container">
-    <h1>{section?.title ?? root}</h1>
-
-    <div class="cms-grid">
-      {section?.groups.map((group) => (
-        <a class="cms-card" href={group.href}>
-          <h2>{group.name}</h2>
-          <p>{group.count} items</p>
-          <span class="cms-meta">{group.meta}</span>
-        </a>
-      ))}
-    </div>
+  <h1>{section?.title ?? root}</h1>
+  <div class="cms-grid">
+    {section?.groups.map((group) => (
+      <a class="cms-card" href={group.href}>
+        <h2>{group.title}</h2>
+        <p>{group.count} items</p>
+      </a>
+    ))}
   </div>
 </Layout>

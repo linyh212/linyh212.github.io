@@ -1,8 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro'
-import { getGroupEntries } from '../../../lib/cms/domain';
-import { generateGroupRoutes } from '../../../lib/cms/routes';
-
+import { getGroupEntries, generateGroupRoutes } from '../../../lib/cms/query';
 import PinningScript from '../../../components/PinningScript.astro';
 const root = 'note';
 
@@ -13,26 +11,21 @@ export async function getStaticPaths() {
 }
 
 const { note } = Astro.params;
-
-const groupEntries = await getGroupEntries(root, note);
+const groupEntries = await getGroupEntries(root, note as string);
 ---
 
 <Layout>
-  <div class="container">
-    <h1>{note}</h1>
-
-    <div class="grid" id="fileGrid">
-      {groupEntries.map((entry) => (
-        <article class="card" data-file-id={entry.id}>
-          <a class="card-link" href={`/notes/${note}/${entry.data.slug}`}>
-            <h2>{entry.data.title}</h2>
-            <p>{entry.data.description}</p>
-          </a>
-
-          <button class="pin-btn" data-file-id={entry.id}>❤️</button>
-        </article>
-      ))}
-    </div>
+  <h1>{note}</h1>
+  <div class="grid" id="fileGrid">
+    {groupEntries.map((entry) => (
+      <article class="card" data-file-id={entry.id}>
+        <a class="card-link" href={`/notes/${note}/${entry.data.slug}`}>
+          <h2>{entry.data.title}</h2>
+          <p>{entry.data.description}</p>
+        </a>
+        <button class="pin-btn" data-file-id={entry.id}>❤️</button>
+      </article>
+    ))}
   </div>
 </Layout>
 

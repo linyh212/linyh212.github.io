@@ -1,10 +1,9 @@
 ---
 import { render } from "astro:content";
-import NoteLayout from "../../../../layouts/NoteLayout.astro";
+import Layout from "../../../../layouts/Layout.astro";
 import Sidebar from "../../../../components/Sidebar.astro";
 import { getMeta } from "../../../../lib/cms/core";
-import { getGroupEntries } from "../../../../lib/cms/domain";
-import { generateAllSlugRoutes } from "../../../../lib/cms/routes";
+import { getGroupEntries, generateAllSlugRoutes } from "../../../../lib/cms/query";
 
 const { root, group, slug } = Astro.params;
 
@@ -14,11 +13,15 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const meta = getMeta(entry);
-const projectEntries = await getGroupEntries(root, meta.group);
+const projectEntries = await getGroupEntries(root as string, meta.group);
 const { Content } = await render(entry);
 ---
 
-<NoteLayout projects={projectEntries} currentSlug={meta.slug ?? slug}>
+<Layout 
+  title={entry.data.title} 
+  projects={projectEntries} 
+  currentSlug={meta.slug ?? slug}
+>
   <Fragment slot="sidebar">
     <Sidebar
       root={root}
@@ -28,24 +31,12 @@ const { Content } = await render(entry);
     />
   </Fragment>
 
-  <article class="content">
-    <h1>{entry.data.title}</h1>
-    <Content />
-  </article>
-</NoteLayout>
+  <h1>{entry.data.title}</h1>
+  <Content />
+</Layout>
 
 <style>
-  .content {
-    max-width: 920px;
-    margin: 0 auto;
-    font-size: 1.08rem;
-    line-height: 1.85;
-    color: #e5e7eb;
-  }
-
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    color: white;
+  :global(.markdown p) {
+    font-size: 1.2rem;
   }
 </style>

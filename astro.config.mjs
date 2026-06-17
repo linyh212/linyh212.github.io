@@ -11,6 +11,7 @@ export default defineConfig({
       rehypePlugins: [rehypeKatex],
     }),
   },
+  integrations: [],
   redirects: {
     '/project/Algorithm/Algorithm': '/project/Algorithm/',
   },

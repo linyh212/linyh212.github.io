@@ -2,27 +2,25 @@
 import Layout from '../../layouts/Layout.astro';
 import {
   getDomainEntries,
-  getGroupsByRoot,
-  getGroupEntriesByRoot,
-  formatGroupMeta,
-  getRootGroupTitle
-} from '../../lib/cms/domain';
+  getGroupsMap,
+  filterByGroup,
+  formatDate,
+  formatTitle
+} from '../../lib/cms/query';
 
 const root = 'test';
-const title = getRootGroupTitle(root);
-
+const title = formatTitle(root);
 const entries = await getDomainEntries(root);
-
-const groups = getGroupsByRoot(entries)[root] ?? [];
+const groups = getGroupsMap(entries)[root] ?? [];
 
 const groupData = groups.map((group) => {
-  const items = getGroupEntriesByRoot(entries, root, group);
-
+  const items = filterByGroup(entries, root, group);
   return {
     name: group,
+    title: formatTitle(group),
     count: items.length,
-    meta: formatGroupMeta(items) || '—',
-    href: `/test/${group}`
+    meta: formatDate(items) || '—',
+    href: `/tests/${group}`
   };
 });
 ---
@@ -30,12 +28,11 @@ const groupData = groups.map((group) => {
 <Layout>
   <div class="container">
     <h1>{title}</h1>
-
     <div class="grid">
       {groupData.map((group) => (
         <a class="card" href={group.href}>
-          <h2>{group.name}</h2>
-          <p>{group.count} items</p>
+          <h2>{group.title}</h2>
+          <p>{group.count} tests</p>
           <span class="meta">{group.meta}</span>
         </a>
       ))}

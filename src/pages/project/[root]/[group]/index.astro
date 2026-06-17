@@ -1,38 +1,32 @@
 ---
 import Layout from "../../../../layouts/Layout.astro";
-import { getGroupEntries } from "../../../../lib/cms/domain";
-import { generateAllGroupRoutes } from "../../../../lib/cms/routes";
-
+import { getGroupEntries, generateAllGroupRoutes } from "../../../../lib/cms/query";
 import PinningScript from '../../../../components/PinningScript.astro';
 export async function getStaticPaths() {
   return await generateAllGroupRoutes('root', 'group');
 }
 
 const { root, group } = Astro.params;
-
-const groupEntries = await getGroupEntries(root, group);
+const groupEntries = await getGroupEntries(root as string, group as string);
 ---
 
 <Layout>
-  <div class="container">
-    <h1>{root}: {group}</h1>
-
-    {groupEntries.length === 0 ? (
-      <p class="cms-meta">此分類下目前沒有內容。</p>
-    ) : (
-      <div class="cms-grid" id="fileGrid">
-        {groupEntries.map((entry) => (
-          <div class="cms-card" data-file-id={entry.id}>
-            <a href={`/project/${root}/${group}/${entry.data.slug}`} style="text-decoration: none; color: inherit;">
-              <h2>{entry.data.title}</h2>
-              <p>{entry.data.description}</p>
-            </a>
-            <button class="pin-btn" data-file-id={entry.id}>❤️</button>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
+  <h1>{root}: {group}</h1>
+  {groupEntries.length === 0 ? (
+    <p class="cms-meta">此分類下目前沒有內容。</p>
+  ) : (
+    <div class="cms-grid" id="fileGrid">
+      {groupEntries.map((entry) => (
+        <div class="cms-card" data-file-id={entry.id}>
+          <a href={`/project/${root}/${group}/${entry.data.slug}`} style="text-decoration: none; color: inherit;">
+            <h2>{entry.data.title}</h2>
+            <p>{entry.data.description}</p>
+          </a>
+          <button class="pin-btn" data-file-id={entry.id}>❤️</button>
+        </div>
+      ))}
+    </div>
+  )}
 </Layout>
 
 <PinningScript />

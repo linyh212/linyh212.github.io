@@ -1,10 +1,9 @@
 ---
 import { render } from 'astro:content';
-import NoteLayout from '../../../layouts/NoteLayout.astro';
+import Layout from '../../../layouts/Layout.astro';
 import Sidebar from '../../../components/Sidebar.astro';
 import { getMeta } from '../../../lib/cms/core';
-import { getGroupEntries } from '../../../lib/cms/domain';
-import { generateSlugRoutes } from '../../../lib/cms/routes';
+import { getGroupEntries, generateSlugRoutes } from '../../../lib/cms/query';
 
 export async function getStaticPaths() {
   return await generateSlugRoutes('test', 'test');
@@ -16,7 +15,8 @@ const testEntries = await getGroupEntries('test', meta.group);
 const { Content } = await render(entry);
 ---
 
-<NoteLayout
+<Layout
+  title={entry.data.title}
   projects={testEntries}
   currentSlug={meta.slug}
 >
@@ -31,4 +31,4 @@ const { Content } = await render(entry);
 
   <h1>{entry.data.title}</h1>
   <Content />
-</NoteLayout>
+</Layout>

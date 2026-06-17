@@ -1,42 +1,35 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getCollection } from "astro:content";
-import { buildProjectTree } from "../../lib/cms/tree";
-
-const entries = await getCollection("content");
+import { getEntries, buildProjectTree } from "../../lib/cms/query";
+const entries = await getEntries();
 const projectData = buildProjectTree(entries);
-
 const pageTitle = projectData.length === 1 ? projectData[0].title : "Overview";
 ---
 
 <Layout>
-  <div class="container">
-    <h1 class="cms-title">{pageTitle}</h1>
+  <h1 class="cms-title">{pageTitle}</h1>
+  {
+    projectData.length === 0 ? (
+      <p class="cms-meta">目前沒有可用的內容。</p>
+    ) : (
+      projectData.map((section) => (
+        <section class="root-block">
+          <h2 class="root-title">{section.title}</h2>
 
-    {
-      projectData.length === 0 ? (
-        <p class="cms-meta">目前沒有可用的內容。</p>
-      ) : (
-        projectData.map((section) => (
-          <section class="root-block">
-            <h2 class="root-title">{section.title}</h2>
-
-            {section.groups.length === 0 ? (
-              <p class="cms-meta">尚無子資料夾</p>
-            ) : (
-              <div class="cms-grid">
-                {section.groups.map((group) => (
-                  <a href={group.href} class="cms-card">
-                    <h3>{group.name}</h3>
-                    <p>{group.count} items</p>
-                    <span class="cms-meta">{group.meta}</span>
-                  </a>
-                ))}
-              </div>
-            )}
-          </section>
-        ))
-      )
-    }
-  </div>
+          {section.groups.length === 0 ? (
+            <p class="cms-meta">尚無子資料夾</p>
+          ) : (
+            <div class="cms-grid">
+              {section.groups.map((group) => (
+                <a href={group.href} class="cms-card">
+                  <h3>{group.title}</h3>
+                  <p>{group.count} items</p>
+                </a>
+              ))}
+            </div>
+          )}
+        </section>
+      ))
+    )
+  }
 </Layout>
