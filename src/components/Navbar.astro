@@ -58,28 +58,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   position: sticky;
   top: 0;
   left: 0;
-
   width: 100%;
   height: var(--navbar-height);
-
   z-index: 1000;
   box-sizing: border-box;
-
   padding: 0 24px;
-
   background: var(--color-bg-navbar);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .left {
-  color: var(--color-text-heading);
+  color: var(--text-main);
   font-weight: 600;
   font-size: 14px;
 }
@@ -90,35 +83,29 @@
 }
 
 a {
-  color: var(--color-text-navbar);
+  color: var(--text-normal);
   text-decoration: none;
   font-size: 14px;
-
   position: relative;
   padding-bottom: 4px;
-
-  transition: color 0.25s ease;
+  transition: color var(--transition-speed) var(--ease-in-out), opacity var(--transition-speed) var(--ease-out);
 }
 
 a:hover {
-  color: var(--color-text-link-hover);
+  color: var(--text-main);
 }
 
 a::after {
   content: "";
   position: absolute;
-
   left: 0;
   bottom: 0;
-
   width: 100%;
-  height: 2px;
-
-  background: var(--color-active-indicator);
-
+  height: 1.5px;
+  background: var(--color-accent);
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform 0.28s ease;
+  transition: transform var(--transition-speed) var(--ease-out);
 }
 
 a:hover::after {
@@ -126,18 +113,25 @@ a:hover::after {
   transform-origin: left;
 }
 
+a:active {
+  opacity: 0.7;
+}
+
 /* =========================
    HAMBURGER
 ========================= */
 .menu-btn {
   display: none;
-
   background: none;
   border: none;
-
-  color: var(--color-text-heading);
+  color: var(--text-main);
   font-size: 22px;
   cursor: pointer;
+  transition: transform var(--transition-speed) var(--ease-out);
+}
+
+.menu-btn:active {
+  transform: scale(0.9);
 }
 
 /* =========================
