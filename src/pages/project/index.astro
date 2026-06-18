@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import Ribbons from "../../components/cursor.astro";
 import { getEntries, buildProjectTree } from "../../lib/cms/query";
 const entries = await getEntries();
 const projectData = buildProjectTree(entries);
@@ -7,6 +8,7 @@ const pageTitle = projectData.length === 1 ? projectData[0].title : "Overview";
 ---
 
 <Layout>
+  <Ribbons />
   <h1 class="cms-title">{pageTitle}</h1>
   {
     projectData.length === 0 ? (

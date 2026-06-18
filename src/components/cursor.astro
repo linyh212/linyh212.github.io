@@ -1,0 +1,296 @@
+---
+interface Props {
+  colors?: string[];
+  baseSpring?: number;
+  baseFriction?: number;
+  baseThickness?: number;
+  offsetFactor?: number;
+  maxAge?: number;
+  pointCount?: number;
+  speedMultiplier?: number;
+  enableFade?: boolean;
+  enableShaderEffect?: boolean;
+  effectAmplitude?: number;
+  backgroundColor?: [number, number, number, number];
+}
+
+const {
+  colors = ['#d6c37a'],
+  baseSpring = 0.02,
+  baseFriction = 0.9,
+  baseThickness = 30,
+  offsetFactor = 0.05,
+  maxAge = 400,
+  pointCount = 50,
+  speedMultiplier = 0.5,
+  enableFade = false,
+  enableShaderEffect = false,
+  effectAmplitude = 2,
+  backgroundColor = [0, 0, 0, 0],
+} = Astro.props;
+---
+
+<ribbon-cursor
+  data-colors={JSON.stringify(colors)}
+  data-spring={baseSpring}
+  data-friction={baseFriction}
+  data-thickness={baseThickness}
+  data-offset={offsetFactor}
+  data-max-age={maxAge}
+  data-point-count={pointCount}
+  data-speed={speedMultiplier}
+  data-fade={enableFade ? "1" : ""}
+  data-shader={enableShaderEffect ? "1" : ""}
+  data-amplitude={effectAmplitude}
+  data-bg={JSON.stringify(backgroundColor)}
+></ribbon-cursor>
+
+<style>
+  ribbon-cursor {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  import { Renderer, Transform, Vec3, Color, Polyline } from "ogl";
+
+  interface RibbonConfig {
+    colors: string[];
+    spring: number;
+    friction: number;
+    thickness: number;
+    offset: number;
+    maxAge: number;
+    pointCount: number;
+    speed: number;
+    fade: boolean;
+    shader: boolean;
+    amplitude: number;
+    bg: [number, number, number, number];
+  }
+
+  interface LineState {
+    spring: number;
+    friction: number;
+    mouseVelocity: Vec3;
+    mouseOffset: Vec3;
+    points: Vec3[];
+    polyline: Polyline;
+  }
+
+  class RibbonCursor extends HTMLElement {
+    private config!: RibbonConfig;
+    private renderer!: Renderer;
+    private gl!: any;
+    private scene!: Transform;
+    private lines: LineState[] = [];
+    private mouse = new Vec3();
+    private isVisible = false;
+    private isAnimating = false;
+    private mouseMoved = false;
+    private frameId: number | null = null;
+    private lastTime = performance.now();
+    private resizeObserver!: ResizeObserver;
+    private intersectionObserver!: IntersectionObserver;
+
+    private tmpVec3 = new Vec3();
+    private headTarget = new Vec3();
+    private headDiff = new Vec3();
+
+    connectedCallback() {
+      this.config = this.parseConfig();
+      this.renderer = new Renderer({
+        dpr: Math.min(window.devicePixelRatio || 1, 1.5),
+        alpha: true,
+        antialias: false,
+      });
+      this.gl = this.renderer.gl;
+      this.scene = new Transform();
+
+      this.initGL();
+      this.initLines();
+      this.initObservers();
+      this.initEvents();
+      this.resize();
+    }
+
+    disconnectedCallback() {
+      this.destroy();
+    }
+
+    private parseConfig() {
+      const d = this.dataset;
+      return {
+        colors: JSON.parse(d.colors || '["#d6c37a"]'),
+        spring: parseFloat(d.spring || "0.03"),
+        friction: parseFloat(d.friction || "0.9"),
+        thickness: parseFloat(d.thickness || "30"),
+        offset: parseFloat(d.offset || "0.05"),
+        maxAge: parseFloat(d.maxAge || "350"),
+        pointCount: parseInt(d.pointCount || "50", 10),
+        speed: parseFloat(d.speed || "0.5"),
+        fade: !!d.fade,
+        shader: !!d.shader,
+        amplitude: parseFloat(d.amplitude || "2"),
+        bg: JSON.parse(d.bg || "[0,0,0,0]"),
+      } as RibbonConfig;
+    }
+
+    private initGL() {
+      this.gl.clearColor(...this.config.bg);
+      this.gl.disable(this.gl.DEPTH_TEST);
+      this.gl.disable(this.gl.CULL_FACE);
+
+      const canvas = this.gl.canvas;
+      if (canvas instanceof HTMLCanvasElement) {
+        Object.assign(canvas.style, {
+          position: "absolute",
+          top: "0",
+          left: "0",
+          width: "100%",
+          height: "100%",
+        });
+        this.appendChild(canvas);
+      }
+    }
+
+    private initLines() {
+      const v = `precision highp float;attribute vec3 position,next,prev;attribute vec2 uv;attribute float side;uniform vec2 uResolution;uniform float uDPR,uThickness,uTime,uEnableShaderEffect,uEffectAmplitude;varying vec2 vUV;vec4 getPos(){vec4 c=vec4(position,1.);vec2 a=vec2(uResolution.x/uResolution.y,1.),n=next.xy*a,p=prev.xy*a,t=normalize(n-p),m=vec2(-t.y,t.x)/a;m*=mix(1.,.1,pow(abs(uv.y-.5)*2.,2.));m*=smoothstep(0.,.02,length(n-p));m*=(1./(uResolution.y/uDPR))*uThickness;c.xy-=m*side;if(uEnableShaderEffect>.5)c.xy+=m*sin(uTime*2.+c.x*8.+c.y*4.)*uEffectAmplitude*.5;return c;}void main(){vUV=uv;gl_Position=getPos();}`;
+      const f = `precision highp float;uniform vec3 uColor;uniform float uOpacity,uEnableFade;varying vec2 vUV;void main(){float f=1.;if(uEnableFade>.5)f=smoothstep(0.,.8,vUV.y);gl_FragColor=vec4(uColor,uOpacity*f);}`;
+
+      const { colors, spring: bS, friction: bF, thickness: bT, offset, pointCount, shader, amplitude, fade } = this.config;
+      const center = (colors.length - 1) / 2;
+
+      colors.forEach((hex: string, i: number) => {
+        const points = Array.from({ length: pointCount }, () => new Vec3());
+        const polyline = new Polyline(this.gl, {
+          points,
+          vertex: v,
+          fragment: f,
+          uniforms: {
+            uColor: { value: new Color(hex) },
+            uThickness: { value: Math.max(1, bT + (Math.random() - 0.5) * 3) },
+            uOpacity: { value: 1.0 },
+            uTime: { value: 0.0 },
+            uEnableShaderEffect: { value: shader ? 1.0 : 0.0 },
+            uEffectAmplitude: { value: amplitude },
+            uEnableFade: { value: fade ? 1.0 : 0.0 },
+          },
+        });
+
+        polyline.mesh.setParent(this.scene);
+        this.lines.push({
+          spring: Math.max(0.01, bS + (Math.random() - 0.5) * 0.05),
+          friction: Math.min(0.99, Math.max(0.8, bF + (Math.random() - 0.5) * 0.05)),
+          mouseVelocity: new Vec3(),
+          mouseOffset: new Vec3((i - center) * offset + (Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.1, 0),
+          points,
+          polyline,
+        });
+      });
+    }
+
+    private initObservers() {
+      this.resizeObserver = new ResizeObserver((es) => es[0].contentRect.width > 0 && this.resize());
+      this.resizeObserver.observe(this);
+
+      this.intersectionObserver = new IntersectionObserver((es) => {
+        this.isVisible = es[0].isIntersecting;
+        if (this.isVisible && !this.isAnimating) this.startAnimation();
+      });
+      this.intersectionObserver.observe(this);
+    }
+
+    private initEvents() {
+      window.addEventListener("mousemove", this.handleMouseMove);
+      window.addEventListener("touchmove", this.handleMouseMove, { passive: true });
+      window.addEventListener("touchstart", this.handleMouseMove, { passive: true });
+    }
+
+    private resize() {
+      const w = this.clientWidth, h = this.clientHeight;
+      if (w <= 0 || h <= 0) return;
+      this.renderer.setSize(w, h);
+      this.lines.forEach((l) => l.polyline.resize());
+    }
+
+    private handleMouseMove = (e: MouseEvent | TouchEvent) => {
+      const rect = this.getBoundingClientRect();
+      const { clientX, clientY } = "changedTouches" in e ? e.changedTouches[0] : (e as MouseEvent);
+      this.mouse.set(((clientX - rect.left) / (rect.width || 1)) * 2 - 1, 1 - ((clientY - rect.top) / (rect.height || 1)) * 2, 0);
+      this.mouseMoved = true;
+      if (this.isVisible && !this.isAnimating) this.startAnimation();
+    };
+
+    private startAnimation() {
+      if (this.isAnimating) return;
+      this.isAnimating = true;
+      this.lastTime = performance.now();
+      this.renderLoop();
+    }
+
+    private renderLoop = () => {
+      if (!this.isVisible) return (this.isAnimating = false);
+      const now = performance.now(), dt = Math.min(now - this.lastTime, 32);
+      this.lastTime = now;
+      let moved = this.mouseMoved;
+      this.mouseMoved = false;
+      const { speed, maxAge } = this.config, threshold = 0.0001;
+
+      for (const line of this.lines) {
+        const { points, spring, friction, mouseOffset, mouseVelocity, polyline } = line;
+        this.headTarget.copy(this.mouse).add(mouseOffset);
+        this.headDiff.copy(this.headTarget).sub(points[0]);
+        this.tmpVec3.copy(this.headDiff).multiply(spring);
+        mouseVelocity.add(this.tmpVec3).multiply(friction);
+        points[0].add(mouseVelocity);
+        if (mouseVelocity.len() > threshold || this.headDiff.len() > threshold) moved = true;
+
+        const alpha = Math.min(1, (dt * speed) / (maxAge / (points.length - 1)));
+        for (let i = 1; i < points.length; i++) {
+          this.tmpVec3.copy(points[i - 1]).sub(points[i]);
+          if (this.tmpVec3.len() > threshold) { points[i].lerp(points[i - 1], alpha); moved = true; }
+        }
+        if (polyline.mesh.program.uniforms.uTime) polyline.mesh.program.uniforms.uTime.value = now * 0.001;
+        polyline.updateGeometry();
+      }
+      this.renderer.render({ scene: this.scene });
+      if (moved) this.frameId = requestAnimationFrame(this.renderLoop);
+      else this.isAnimating = false;
+    };
+
+    public destroy() {
+      if (this.frameId) cancelAnimationFrame(this.frameId);
+      window.removeEventListener("mousemove", this.handleMouseMove);
+      window.removeEventListener("touchmove", this.handleMouseMove);
+      window.removeEventListener("touchstart", this.handleMouseMove);
+      this.resizeObserver.disconnect();
+      this.intersectionObserver.disconnect();
+      this.lines.forEach((l) => {
+        const m = l.polyline.mesh;
+        if (m) {
+          if (m.geometry) {
+            for (const k in m.geometry.attributes) {
+              const a = m.geometry.attributes[k];
+              if (a?.buffer) this.gl.deleteBuffer(a.buffer);
+            }
+          }
+          if (m.program?.program) this.gl.deleteProgram(m.program.program);
+        }
+      });
+      this.gl.getExtension("WEBGL_lose_context")?.loseContext();
+    }
+  }
+
+  if (!customElements.get("ribbon-cursor")) {
+    customElements.define("ribbon-cursor", RibbonCursor);
+  }
+</script>

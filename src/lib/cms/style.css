@@ -11,7 +11,7 @@
   --color-bg-navbar: rgba(22, 22, 22, 0.75);
 
   --color-bg-card: rgba(255, 255, 255, 0.035);
-  --color-bg-card-hover: rgba(255, 255, 255, 0.06);
+  --color-bg-card-hover: rgba(255, 255, 255, 0.1);
 
   --color-overlay: rgba(0, 0, 0, 0.65);
 
@@ -51,7 +51,7 @@
 
   --line-height-base: 1.85;
 
-  --navbar-height: 60px;
+  --navbar-height: 64px;
   --sidebar-width: 240px;
 
   /* Animation */
@@ -64,6 +64,10 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  /* Standard scrollbar for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar) transparent;
 }
 
 body {
@@ -100,7 +104,8 @@ body {
 main {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   padding: 0 24px 24px;
 }
 
@@ -145,6 +150,7 @@ main {
   text-align: justify;
   text-justify: inter-ideograph;
   text-wrap: pretty;
+  hyphens: auto;
 }
 
 .markdown ul,
@@ -389,7 +395,7 @@ main {
 /* ---------- Mobile Menu ---------- */
 
 .mobile-menu {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 12px;
 
@@ -403,6 +409,7 @@ main {
   background: var(--color-bg-surface);
 
   opacity: 0;
+  visibility: hidden;
   transform: translateY(-10px);
 
   pointer-events: none;
@@ -413,7 +420,7 @@ main {
 }
 
 .mobile-menu.show {
-  display: flex;
+  visibility: visible;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
