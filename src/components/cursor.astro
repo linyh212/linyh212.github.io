@@ -51,6 +51,7 @@ class RibbonCursor extends HTMLElement {
   private mouseMoved = false;
   private time = 0;
   private boundHandleMove: (e: MouseEvent | TouchEvent) => void;
+  private _isMobile = false;
 
   constructor() {
     super();
@@ -58,6 +59,9 @@ class RibbonCursor extends HTMLElement {
   }
 
   connectedCallback() {
+    this._isMobile = window.matchMedia('(pointer: coarse)').matches;
+    if (this._isMobile) return;
+
     this.config = this.parseConfig();
     this.canvas = document.createElement('canvas');
     this.canvas.style.cssText = 'display:block;width:100%;height:100%;';
@@ -122,6 +126,7 @@ class RibbonCursor extends HTMLElement {
   }
 
   private initEvents() {
+    if (this._isMobile) return;
     window.addEventListener('mousemove', this.boundHandleMove);
     window.addEventListener('touchmove', this.boundHandleMove, { passive: true });
     window.addEventListener('touchstart', this.boundHandleMove, { passive: true });
@@ -140,6 +145,7 @@ class RibbonCursor extends HTMLElement {
   }
 
   private handleMove(e: MouseEvent | TouchEvent) {
+    if (this._isMobile) return;
     const rect = this.getBoundingClientRect();
     let cx, cy;
     if ('changedTouches' in e) {
@@ -156,14 +162,14 @@ class RibbonCursor extends HTMLElement {
   }
 
   private startAnimation() {
-    if (this.isAnimating) return;
+    if (this._isMobile || this.isAnimating) return;
     this.isAnimating = true;
     this.lastTime = performance.now();
     this.renderLoop();
   }
 
   private renderLoop = () => {
-    if (!this.isVisible) {
+    if (this._isMobile || !this.isVisible) {
       this.isAnimating = false;
       return;
     }
@@ -253,13 +259,19 @@ class RibbonCursor extends HTMLElement {
   };
 
   public destroy() {
+    if (!this.canvas) return;
+
     if (this.frameId) cancelAnimationFrame(this.frameId);
     window.removeEventListener('mousemove', this.boundHandleMove);
     window.removeEventListener('touchmove', this.boundHandleMove);
     window.removeEventListener('touchstart', this.boundHandleMove);
-    this.resizeObserver.disconnect();
-    this.intersectionObserver.disconnect();
+    this.resizeObserver?.disconnect();
+    this.intersectionObserver?.disconnect();
     if (this.canvas.parentNode) this.canvas.parentNode.removeChild(this.canvas);
+    this.isAnimating = false;
+    this.isVisible = false;
+    this.frameId = null;
+    this.ribbons = [];
   }
 }
 
