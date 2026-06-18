@@ -1,49 +1,8 @@
 ---
-interface Props {
-  colors?: string[];
-  baseSpring?: number;
-  baseFriction?: number;
-  baseThickness?: number;
-  offsetFactor?: number;
-  maxAge?: number;
-  pointCount?: number;
-  speedMultiplier?: number;
-  enableFade?: boolean;
-  enableShaderEffect?: boolean;
-  effectAmplitude?: number;
-  backgroundColor?: [number, number, number, number];
-}
-
-const {
-  colors = ['#d6c37a'],
-  baseSpring = 0.02,
-  baseFriction = 0.9,
-  baseThickness = 30,
-  offsetFactor = 0.05,
-  maxAge = 400,
-  pointCount = 50,
-  speedMultiplier = 0.5,
-  enableFade = false,
-  enableShaderEffect = false,
-  effectAmplitude = 2,
-  backgroundColor = [0, 0, 0, 0],
-} = Astro.props;
+// Astro 前言區塊
 ---
 
-<ribbon-cursor
-  data-colors={JSON.stringify(colors)}
-  data-spring={baseSpring}
-  data-friction={baseFriction}
-  data-thickness={baseThickness}
-  data-offset={offsetFactor}
-  data-max-age={maxAge}
-  data-point-count={pointCount}
-  data-speed={speedMultiplier}
-  data-fade={enableFade ? "1" : ""}
-  data-shader={enableShaderEffect ? "1" : ""}
-  data-amplitude={effectAmplitude}
-  data-bg={JSON.stringify(backgroundColor)}
-></ribbon-cursor>
+<ribbon-cursor {...Astro.props}></ribbon-cursor>
 
 <style>
   ribbon-cursor {
@@ -53,244 +12,258 @@ const {
     left: 0;
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
-    z-index: -1;
     pointer-events: none;
+    z-index: 9999;
   }
 </style>
 
 <script>
-  import { Renderer, Transform, Vec3, Color, Polyline } from "ogl";
+interface RibbonConfig {
+  colors: string[];
+  spring: number;
+  friction: number;
+  thickness: number;
+  offset: number;
+  maxAge: number;
+  pointCount: number;
+  speed: number;
+  fade: boolean;
+  shader: boolean;
+  amplitude: number;
+  bg: [number, number, number, number];
+}
 
-  interface RibbonConfig {
-    colors: string[];
-    spring: number;
-    friction: number;
-    thickness: number;
-    offset: number;
-    maxAge: number;
-    pointCount: number;
-    speed: number;
-    fade: boolean;
-    shader: boolean;
-    amplitude: number;
-    bg: [number, number, number, number];
+class RibbonCursor extends HTMLElement {
+  private config!: RibbonConfig;
+  private canvas!: HTMLCanvasElement;
+  private ctx!: CanvasRenderingContext2D;
+  private width = 0;
+  private height = 0;
+  private dpr = 1;
+  private mouse = { x: 0.5, y: 0.5 };
+  private ribbons: any[] = [];
+  private frameId: number | null = null;
+  private lastTime = performance.now();
+  private resizeObserver!: ResizeObserver;
+  private intersectionObserver!: IntersectionObserver;
+  private isVisible = false;
+  private isAnimating = false;
+  private mouseMoved = false;
+  private time = 0;
+  private boundHandleMove: (e: MouseEvent | TouchEvent) => void;
+
+  constructor() {
+    super();
+    this.boundHandleMove = this.handleMove.bind(this);
   }
 
-  interface LineState {
-    spring: number;
-    friction: number;
-    mouseVelocity: Vec3;
-    mouseOffset: Vec3;
-    points: Vec3[];
-    polyline: Polyline;
+  connectedCallback() {
+    this.config = this.parseConfig();
+    this.canvas = document.createElement('canvas');
+    this.canvas.style.cssText = 'display:block;width:100%;height:100%;';
+    this.appendChild(this.canvas);
+    this.ctx = this.canvas.getContext('2d')!;
+
+    this.initRibbons();
+    this.initObservers();
+    this.initEvents();
+    this.resize();
   }
 
-  class RibbonCursor extends HTMLElement {
-    private config!: RibbonConfig;
-    private renderer!: Renderer;
-    private gl!: any;
-    private scene!: Transform;
-    private lines: LineState[] = [];
-    private mouse = new Vec3();
-    private isVisible = false;
-    private isAnimating = false;
-    private mouseMoved = false;
-    private frameId: number | null = null;
-    private lastTime = performance.now();
-    private resizeObserver!: ResizeObserver;
-    private intersectionObserver!: IntersectionObserver;
+  disconnectedCallback() {
+    this.destroy();
+  }
 
-    private tmpVec3 = new Vec3();
-    private headTarget = new Vec3();
-    private headDiff = new Vec3();
+  private parseConfig(): RibbonConfig {
+    const d = this.dataset;
+    return {
+      colors: JSON.parse(d.colors || '["#d6c37a"]'),
+      spring: parseFloat(d.spring || "0.03"),
+      friction: parseFloat(d.friction || "0.8"),
+      thickness: parseFloat(d.thickness || "30"),
+      offset: parseFloat(d.offset || "0.05"),
+      maxAge: parseFloat(d.maxAge || "350"),
+      pointCount: parseInt(d.pointCount || "50", 10),
+      speed: parseFloat(d.speed || "0.5"),
+      fade: !!d.fade,
+      shader: !!d.shader,
+      amplitude: parseFloat(d.amplitude || "2"),
+      bg: JSON.parse(d.bg || "[0,0,0,0]"),
+    };
+  }
 
-    connectedCallback() {
-      this.config = this.parseConfig();
-      this.renderer = new Renderer({
-        dpr: Math.min(window.devicePixelRatio || 1, 1.5),
-        alpha: true,
-        antialias: false,
-      });
-      this.gl = this.renderer.gl;
-      this.scene = new Transform();
-
-      this.initGL();
-      this.initLines();
-      this.initObservers();
-      this.initEvents();
-      this.resize();
-    }
-
-    disconnectedCallback() {
-      this.destroy();
-    }
-
-    private parseConfig() {
-      const d = this.dataset;
+  private initRibbons() {
+    const { colors, spring: bS, friction: bF, thickness: bT, offset, pointCount } = this.config;
+    this.ribbons = [colors[0]].map((hex: string) => {
+      const pts = Array.from({ length: pointCount }, () => ({ x: 0, y: 0 }));
       return {
-        colors: JSON.parse(d.colors || '["#d6c37a"]'),
-        spring: parseFloat(d.spring || "0.03"),
-        friction: parseFloat(d.friction || "0.9"),
-        thickness: parseFloat(d.thickness || "30"),
-        offset: parseFloat(d.offset || "0.05"),
-        maxAge: parseFloat(d.maxAge || "350"),
-        pointCount: parseInt(d.pointCount || "50", 10),
-        speed: parseFloat(d.speed || "0.5"),
-        fade: !!d.fade,
-        shader: !!d.shader,
-        amplitude: parseFloat(d.amplitude || "2"),
-        bg: JSON.parse(d.bg || "[0,0,0,0]"),
-      } as RibbonConfig;
-    }
+        color: hex,
+        spring: bS,
+        friction: bF,
+        thickness: Math.max(1, bT + (Math.random() - 0.5) * 3),
+        offsetX: 0,
+        offsetY: 0,
+        velX: 0,
+        velY: 0,
+        points: pts,
+      };
+    });
+  }
 
-    private initGL() {
-      this.gl.clearColor(...this.config.bg);
-      this.gl.disable(this.gl.DEPTH_TEST);
-      this.gl.disable(this.gl.CULL_FACE);
+  private initObservers() {
+    this.resizeObserver = new ResizeObserver(() => this.resize());
+    this.resizeObserver.observe(this);
 
-      const canvas = this.gl.canvas;
-      if (canvas instanceof HTMLCanvasElement) {
-        Object.assign(canvas.style, {
-          position: "absolute",
-          top: "0",
-          left: "0",
-          width: "100%",
-          height: "100%",
-        });
-        this.appendChild(canvas);
-      }
-    }
-
-    private initLines() {
-      const v = `precision highp float;attribute vec3 position,next,prev;attribute vec2 uv;attribute float side;uniform vec2 uResolution;uniform float uDPR,uThickness,uTime,uEnableShaderEffect,uEffectAmplitude;varying vec2 vUV;vec4 getPos(){vec4 c=vec4(position,1.);vec2 a=vec2(uResolution.x/uResolution.y,1.),n=next.xy*a,p=prev.xy*a,t=normalize(n-p),m=vec2(-t.y,t.x)/a;m*=mix(1.,.1,pow(abs(uv.y-.5)*2.,2.));m*=smoothstep(0.,.02,length(n-p));m*=(1./(uResolution.y/uDPR))*uThickness;c.xy-=m*side;if(uEnableShaderEffect>.5)c.xy+=m*sin(uTime*2.+c.x*8.+c.y*4.)*uEffectAmplitude*.5;return c;}void main(){vUV=uv;gl_Position=getPos();}`;
-      const f = `precision highp float;uniform vec3 uColor;uniform float uOpacity,uEnableFade;varying vec2 vUV;void main(){float f=1.;if(uEnableFade>.5)f=smoothstep(0.,.8,vUV.y);gl_FragColor=vec4(uColor,uOpacity*f);}`;
-
-      const { colors, spring: bS, friction: bF, thickness: bT, offset, pointCount, shader, amplitude, fade } = this.config;
-      const center = (colors.length - 1) / 2;
-
-      colors.forEach((hex: string, i: number) => {
-        const points = Array.from({ length: pointCount }, () => new Vec3());
-        const polyline = new Polyline(this.gl, {
-          points,
-          vertex: v,
-          fragment: f,
-          uniforms: {
-            uColor: { value: new Color(hex) },
-            uThickness: { value: Math.max(1, bT + (Math.random() - 0.5) * 3) },
-            uOpacity: { value: 1.0 },
-            uTime: { value: 0.0 },
-            uEnableShaderEffect: { value: shader ? 1.0 : 0.0 },
-            uEffectAmplitude: { value: amplitude },
-            uEnableFade: { value: fade ? 1.0 : 0.0 },
-          },
-        });
-
-        polyline.mesh.setParent(this.scene);
-        this.lines.push({
-          spring: Math.max(0.01, bS + (Math.random() - 0.5) * 0.05),
-          friction: Math.min(0.99, Math.max(0.8, bF + (Math.random() - 0.5) * 0.05)),
-          mouseVelocity: new Vec3(),
-          mouseOffset: new Vec3((i - center) * offset + (Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.1, 0),
-          points,
-          polyline,
-        });
-      });
-    }
-
-    private initObservers() {
-      this.resizeObserver = new ResizeObserver((es) => es[0].contentRect.width > 0 && this.resize());
-      this.resizeObserver.observe(this);
-
-      this.intersectionObserver = new IntersectionObserver((es) => {
-        this.isVisible = es[0].isIntersecting;
-        if (this.isVisible && !this.isAnimating) this.startAnimation();
-      });
-      this.intersectionObserver.observe(this);
-    }
-
-    private initEvents() {
-      window.addEventListener("mousemove", this.handleMouseMove);
-      window.addEventListener("touchmove", this.handleMouseMove, { passive: true });
-      window.addEventListener("touchstart", this.handleMouseMove, { passive: true });
-    }
-
-    private resize() {
-      const w = this.clientWidth, h = this.clientHeight;
-      if (w <= 0 || h <= 0) return;
-      this.renderer.setSize(w, h);
-      this.lines.forEach((l) => l.polyline.resize());
-    }
-
-    private handleMouseMove = (e: MouseEvent | TouchEvent) => {
-      const rect = this.getBoundingClientRect();
-      const { clientX, clientY } = "changedTouches" in e ? e.changedTouches[0] : (e as MouseEvent);
-      this.mouse.set(((clientX - rect.left) / (rect.width || 1)) * 2 - 1, 1 - ((clientY - rect.top) / (rect.height || 1)) * 2, 0);
-      this.mouseMoved = true;
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      this.isVisible = entries[0].isIntersecting;
       if (this.isVisible && !this.isAnimating) this.startAnimation();
-    };
+    });
+    this.intersectionObserver.observe(this);
+  }
 
-    private startAnimation() {
-      if (this.isAnimating) return;
-      this.isAnimating = true;
-      this.lastTime = performance.now();
-      this.renderLoop();
+  private initEvents() {
+    window.addEventListener('mousemove', this.boundHandleMove);
+    window.addEventListener('touchmove', this.boundHandleMove, { passive: true });
+    window.addEventListener('touchstart', this.boundHandleMove, { passive: true });
+  }
+
+  private resize() {
+    const rect = this.getBoundingClientRect();
+    this.width = rect.width;
+    this.height = rect.height;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.canvas.width = this.width * this.dpr;
+    this.canvas.height = this.height * this.dpr;
+    this.canvas.style.width = this.width + 'px';
+    this.canvas.style.height = this.height + 'px';
+    this.ctx.scale(this.dpr, this.dpr);
+  }
+
+  private handleMove(e: MouseEvent | TouchEvent) {
+    const rect = this.getBoundingClientRect();
+    let cx, cy;
+    if ('changedTouches' in e) {
+      cx = e.changedTouches[0].clientX;
+      cy = e.changedTouches[0].clientY;
+    } else {
+      cx = (e as MouseEvent).clientX;
+      cy = (e as MouseEvent).clientY;
+    }
+    this.mouse.x = (cx - rect.left) / (rect.width || 1);
+    this.mouse.y = 1 - (cy - rect.top) / (rect.height || 1);
+    this.mouseMoved = true;
+    if (this.isVisible && !this.isAnimating) this.startAnimation();
+  }
+
+  private startAnimation() {
+    if (this.isAnimating) return;
+    this.isAnimating = true;
+    this.lastTime = performance.now();
+    this.renderLoop();
+  }
+
+  private renderLoop = () => {
+    if (!this.isVisible) {
+      this.isAnimating = false;
+      return;
     }
 
-    private renderLoop = () => {
-      if (!this.isVisible) return (this.isAnimating = false);
-      const now = performance.now(), dt = Math.min(now - this.lastTime, 32);
-      this.lastTime = now;
-      let moved = this.mouseMoved;
-      this.mouseMoved = false;
-      const { speed, maxAge } = this.config, threshold = 0.0001;
+    const now = performance.now();
+    const dt = Math.min(now - this.lastTime, 32);
+    this.lastTime = now;
+    this.time += dt * 0.002;
 
-      for (const line of this.lines) {
-        const { points, spring, friction, mouseOffset, mouseVelocity, polyline } = line;
-        this.headTarget.copy(this.mouse).add(mouseOffset);
-        this.headDiff.copy(this.headTarget).sub(points[0]);
-        this.tmpVec3.copy(this.headDiff).multiply(spring);
-        mouseVelocity.add(this.tmpVec3).multiply(friction);
-        points[0].add(mouseVelocity);
-        if (mouseVelocity.len() > threshold || this.headDiff.len() > threshold) moved = true;
+    const { speed, maxAge, fade, shader, amplitude, bg } = this.config;
+    const targetX = this.mouse.x * 2 - 1;
+    const targetY = this.mouse.y * 2 - 1;
 
-        const alpha = Math.min(1, (dt * speed) / (maxAge / (points.length - 1)));
-        for (let i = 1; i < points.length; i++) {
-          this.tmpVec3.copy(points[i - 1]).sub(points[i]);
-          if (this.tmpVec3.len() > threshold) { points[i].lerp(points[i - 1], alpha); moved = true; }
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    if (bg[3] > 0) {
+      this.ctx.fillStyle = `rgba(${bg[0]*255},${bg[1]*255},${bg[2]*255},${bg[3]})`;
+      this.ctx.fillRect(0, 0, this.width, this.height);
+    }
+
+    let moved = this.mouseMoved;
+    this.mouseMoved = false;
+
+    for (let r = 0; r < this.ribbons.length; r++) {
+      const ribbon = this.ribbons[r];
+      const noiseX = 0;
+      const noiseY = 0;
+
+      const pts = ribbon.points;
+      const dx = targetX + ribbon.offsetX + noiseX - pts[0].x;
+      const dy = targetY + ribbon.offsetY + noiseY - pts[0].y;
+      ribbon.velX += dx * ribbon.spring;
+      ribbon.velY += dy * ribbon.spring;
+      ribbon.velX *= ribbon.friction;
+      ribbon.velY *= ribbon.friction;
+      pts[0].x += ribbon.velX;
+      pts[0].y += ribbon.velY;
+
+      const segDelay = maxAge / (pts.length - 1);
+      const alpha = Math.min(1, (dt * speed) / segDelay);
+      for (let i = 1; i < pts.length; i++) {
+        const px = pts[i-1].x - pts[i].x;
+        const py = pts[i-1].y - pts[i].y;
+        if (Math.abs(px) > 1e-6 || Math.abs(py) > 1e-6) {
+          pts[i].x += px * alpha;
+          pts[i].y += py * alpha;
+          moved = true;
         }
-        if (polyline.mesh.program.uniforms.uTime) polyline.mesh.program.uniforms.uTime.value = now * 0.001;
-        polyline.updateGeometry();
       }
-      this.renderer.render({ scene: this.scene });
-      if (moved) this.frameId = requestAnimationFrame(this.renderLoop);
-      else this.isAnimating = false;
-    };
 
-    public destroy() {
-      if (this.frameId) cancelAnimationFrame(this.frameId);
-      window.removeEventListener("mousemove", this.handleMouseMove);
-      window.removeEventListener("touchmove", this.handleMouseMove);
-      window.removeEventListener("touchstart", this.handleMouseMove);
-      this.resizeObserver.disconnect();
-      this.intersectionObserver.disconnect();
-      this.lines.forEach((l) => {
-        const m = l.polyline.mesh;
-        if (m) {
-          if (m.geometry) {
-            for (const k in m.geometry.attributes) {
-              const a = m.geometry.attributes[k];
-              if (a?.buffer) this.gl.deleteBuffer(a.buffer);
-            }
-          }
-          if (m.program?.program) this.gl.deleteProgram(m.program.program);
-        }
-      });
-      this.gl.getExtension("WEBGL_lose_context")?.loseContext();
+      this.ctx.save();
+      this.ctx.globalCompositeOperation = 'source-over';
+      this.ctx.lineCap = 'round';
+      this.ctx.lineJoin = 'round';
+
+      for (let i = 1; i < pts.length; i++) {
+        const p1 = pts[i - 1];
+        const p2 = pts[i];
+        
+        const ratio = 1 - (i / pts.length);
+        const currentWidth = ribbon.thickness * ratio * (this.height / 1000);
+        
+        const opacity = fade ? ratio : 1;
+        this.ctx.strokeStyle = ribbon.color;
+        this.ctx.globalAlpha = opacity;
+        this.ctx.lineWidth = currentWidth;
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(
+          (p1.x * 0.5 + 0.5) * this.width,
+          (p1.y * -0.5 + 0.5) * this.height
+        );
+        this.ctx.lineTo(
+          (p2.x * 0.5 + 0.5) * this.width,
+          (p2.y * -0.5 + 0.5) * this.height
+        );
+        this.ctx.stroke();
+      }
+      this.ctx.restore();
     }
-  }
 
-  if (!customElements.get("ribbon-cursor")) {
-    customElements.define("ribbon-cursor", RibbonCursor);
+    if (!moved) {
+      this.isAnimating = false;
+      return;
+    }
+
+    this.frameId = requestAnimationFrame(this.renderLoop);
+  };
+
+  public destroy() {
+    if (this.frameId) cancelAnimationFrame(this.frameId);
+    window.removeEventListener('mousemove', this.boundHandleMove);
+    window.removeEventListener('touchmove', this.boundHandleMove);
+    window.removeEventListener('touchstart', this.boundHandleMove);
+    this.resizeObserver.disconnect();
+    this.intersectionObserver.disconnect();
+    if (this.canvas.parentNode) this.canvas.parentNode.removeChild(this.canvas);
   }
+}
+
+if (!customElements.get('ribbon-cursor')) {
+  customElements.define('ribbon-cursor', RibbonCursor);
+}
 </script>
