@@ -1,7 +1,6 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import { getEntries, buildProjectTree } from "../../../lib/cms/query";
-import Ribbons from "../../../components/cursor.astro";
 
 export async function getStaticPaths() {
   const allEntries = await getEntries();
@@ -18,7 +17,6 @@ const { section } = Astro.props;
 ---
 
 <Layout>
-  <Ribbons />
   <h1>{section?.title ?? root}</h1>
   <div class="cms-grid">
     {section?.groups.map((group) => (
