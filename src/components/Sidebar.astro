@@ -55,7 +55,10 @@ const { root: rootName, projects, currentSlug, group } = Astro.props;
   text-decoration: none;
   padding: 10px 12px;
   border-radius: 10px;
-  transition: background var(--transition-speed) var(--ease-in-out), color var(--transition-speed) var(--ease-in-out);
+  transition: background var(--transition-speed) var(--ease-in-out),
+    color var(--transition-speed) var(--ease-in-out),
+    transform 0.1s ease,
+    filter 0.1s ease;
 }
 
 .sidebar a:hover {
@@ -85,6 +88,16 @@ const { root: rootName, projects, currentSlug, group } = Astro.props;
   color: var(--text-main);
   font-weight: 600;
   background: var(--color-bg-card-hover);
+}
+
+.sidebar .project-link:hover {
+  filter: brightness(1.5);
+  transform: scale(1.02);
+}
+
+.sidebar .project-link:active {
+  transform: scale(0.98);
+  filter: brightness(0.95);
 }
 
 /* Mobile */
