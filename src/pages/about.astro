@@ -1,8 +1,306 @@
 ---
-import Layout from '../layouts/Layout.astro'
+import Layout from '../layouts/Layout.astro';
+
+const projects = [
+  {
+    title: 'linyh212.github.io',
+    description:
+      'My personal portfolio website built with Astro. Focused on clean design, responsive layouts, smooth animations, and a modern user experience.',
+    tags: ['Astro', 'TypeScript', 'CSS'],
+    link: 'https://github.com/linyh212/linyh212.github.io',
+    image: '/images/about_pages.jpg'
+  },
+  {
+    title: 'ndhu csie HW',
+    description:
+      'Computer Science coursework covering algorithms, data structures, and system programming.',
+    tags: ['C/C++', 'Python', 'Assembly'],
+    link: 'https://github.com/linyh212/ndhu-csie-HW',
+    image: '/images/about_csie.jpg'
+  },
+  {
+    title: 'mmpose',
+    description:
+      'Human pose estimation experiments using OpenMMLab MMPose with modern CV pipelines.',
+    tags: ['Python', 'VitPose', 'RCNN'],
+    link: 'https://github.com/linyh212/mmpose',
+    image: '/images/about_mmpose.jpg'
+  },
+  {
+    title: 'Arch Linux',
+    description:
+      'Personal Linux setup with dotfiles, scripts, and workflow optimization.',
+    tags: ['Arch Linux', 'Shell'],
+    link: 'https://github.com/linyh212/arch',
+    image: '/images/about_arch.jpg'
+  },
+  {
+    title: 'Stock Analysis',
+    description:
+      'Market analysis tool with data visualization and API integration.',
+    tags: ['TypeScript', 'Nodejs'],
+    link: 'https://github.com/linyh212/stock',
+    image: '/images/about_stock.jpg'
+  }
+];
 ---
 
-<Layout>
-  <h1>About</h1>
-  <p>這是 About 頁面</p>
+<Layout title="Portfolio">
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <h1>Portfolio</h1>
+      <p>Scroll to explore selected works</p>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about">
+      <div class="about-inner">
+        <h2>About</h2>
+        <p>
+          I’m a developer focused on building modern web experiences with clean UI,
+          smooth animations, and performance-driven design.
+        </p>
+
+        <div class="about-grid">
+          <div>
+            <h3>Focus</h3>
+            <p>Frontend · UI/UX · Web Animation</p>
+          </div>
+
+          <div>
+            <h3>Stack</h3>
+            <p>Astro · TypeScript · CSS · Python</p>
+          </div>
+
+          <div>
+            <h3>Interest</h3>
+            <p>Graphics · Systems · Linux · Invest</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    {projects.map((project, i) => (
+      <section class={`panel ${i % 2 === 0 ? 'left' : 'right'}`}>
+        <div class="sticky">
+
+          <div class="visual">
+            <img src={project.image} alt={project.title} />
+          </div>
+
+          <div class="content">
+            <h2>{project.title}</h2>
+            <p>{project.description}</p>
+
+            <div class="tags">
+              {project.tags.map(tag => (
+                <span>{tag}</span>
+              ))}
+            </div>
+
+            <a href={project.link} target="_blank">
+              View GitHub →
+            </a>
+          </div>
+
+        </div>
+      </section>
+    ))}
+
+  </main>
 </Layout>
+
+<script>
+  const panels = document.querySelectorAll('.panel');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        } else {
+          entry.target.classList.remove('active');
+        }
+      });
+    },
+    {
+      threshold: 0.25,
+      rootMargin: '0px 0px -10% 0px'
+    }
+  );
+
+  panels.forEach((p) => observer.observe(p));
+</script>
+
+<style>
+:root {
+  --bg: #000;
+  --text: #fff;
+  --muted: rgba(255,255,255,.65);
+  --accent: #7c8cff;
+}
+
+main {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.hero {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 8vw, 6rem);
+  letter-spacing: -0.05em;
+}
+
+.hero p {
+  color: var(--muted);
+  margin-top: 16px;
+}
+
+.about {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 0;
+}
+
+.about-inner {
+  width: min(900px, 90vw);
+}
+
+.about h2 {
+  font-size: 3rem;
+}
+
+.about p {
+  margin-top: 20px;
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.about-grid {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.panel {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  width: min(1200px, 90vw);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.panel.right .sticky {
+  direction: rtl;
+}
+
+.panel.right .content {
+  direction: ltr;
+}
+
+/* IMAGE */
+.visual {
+  overflow: hidden;
+  border-radius: 24px;
+  transform: scale(0.95);
+  opacity: 0.6;
+  transition: all 0.8s ease;
+}
+
+.panel.active .visual {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  opacity: 0.2;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
+}
+
+.panel.active .content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.content h2 {
+  font-size: 2.5rem;
+}
+
+.content p {
+  color: var(--muted);
+  margin-top: 16px;
+  line-height: 1.8;
+}
+
+.tags {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tags span {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+.content a {
+  display: inline-block;
+  margin-top: 24px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sticky {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .panel.right .sticky {
+    direction: ltr;
+  }
+
+  .visual {
+    height: 260px;
+  }
+}
+</style>
